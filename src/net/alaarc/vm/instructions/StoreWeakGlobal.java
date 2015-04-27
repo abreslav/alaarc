@@ -7,6 +7,8 @@ import net.alaarc.vm.IVmInstructionVisitor;
 import java.util.Objects;
 
 /**
+ * <code>( a --> | [var ~= a] )</code>
+ *
  * @author dnpetrov
  */
 public class StoreWeakGlobal extends VmInstruction {

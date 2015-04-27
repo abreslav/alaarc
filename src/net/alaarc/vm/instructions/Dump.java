@@ -4,6 +4,8 @@ import net.alaarc.vm.VmInstruction;
 import net.alaarc.vm.IVmInstructionVisitor;
 
 /**
+ * <code>( a --> | dumps a )</code>
+ *
  * @author dnpetrov
  */
 public class Dump extends VmInstruction {

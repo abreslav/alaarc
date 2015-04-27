@@ -7,6 +7,8 @@ import net.alaarc.vm.IVmInstructionVisitor;
 import java.util.Objects;
 
 /**
+ * <code>( --> | 'var' is released, this may cause object release )</code>
+ *
  * @author dnpetrov
  */
 public class ReleaseGlobal extends VmInstruction {

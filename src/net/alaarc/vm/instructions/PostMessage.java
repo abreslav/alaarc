@@ -4,6 +4,8 @@ import net.alaarc.vm.IVmInstructionVisitor;
 import net.alaarc.vm.VmInstruction;
 
 /**
+ * <code>( --> | posts message to VM logger )</code>
+ *
  * @author dnpetrov
  */
 public class PostMessage extends VmInstruction {

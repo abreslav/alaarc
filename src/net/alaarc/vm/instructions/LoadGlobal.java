@@ -7,6 +7,8 @@ import net.alaarc.vm.IVmInstructionVisitor;
 import java.util.Objects;
 
 /**
+ * <code>( --> [var] )</code>
+ *
  * @author dnpetrov
  */
 public class LoadGlobal extends VmInstruction {

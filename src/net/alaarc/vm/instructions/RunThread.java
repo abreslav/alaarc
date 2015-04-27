@@ -7,6 +7,8 @@ import net.alaarc.vm.VmThreadDef;
 import java.util.Objects;
 
 /**
+ * <code>( --> | stars a new thread )<code>
+ *
  * @author dnpetrov
  */
 public class RunThread extends VmInstruction {

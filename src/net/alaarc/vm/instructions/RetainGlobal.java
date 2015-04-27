@@ -7,6 +7,8 @@ import net.alaarc.vm.IVmInstructionVisitor;
 import java.util.Objects;
 
 /**
+ * <code>( --> | 'var' is retained )</code>
+ *
  * @author dnpetrov
  */
 public class RetainGlobal extends VmInstruction {

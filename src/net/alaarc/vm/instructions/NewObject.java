@@ -4,6 +4,8 @@ import net.alaarc.vm.VmInstruction;
 import net.alaarc.vm.IVmInstructionVisitor;
 
 /**
+ * <code>( --> [new object] )</code>
+ *
  * @author dnpetrov
  */
 public class NewObject extends VmInstruction {

@@ -4,6 +4,8 @@ import net.alaarc.vm.VmInstruction;
 import net.alaarc.vm.IVmInstructionVisitor;
 
 /**
+ * <code>( --> | thread sleeps for a random period of time )</code>
+ *
  * @author dnpetrov
  */
 public class SleepRand extends VmInstruction {

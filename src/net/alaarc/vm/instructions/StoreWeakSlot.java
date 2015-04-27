@@ -6,6 +6,8 @@ import net.alaarc.vm.IVmInstructionVisitor;
 import java.util.Objects;
 
 /**
+ * <code>( a b --> | [b.slot ~= a] )</code>
+ *
  * @author dnpetrov
  */
 public class StoreWeakSlot extends VmInstruction {
