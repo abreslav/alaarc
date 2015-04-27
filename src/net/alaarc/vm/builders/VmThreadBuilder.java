@@ -10,6 +10,46 @@ import java.util.List;
 import java.util.function.Consumer;
 
 /**
+ * <ul>
+ *     <li>
+ *         <b>a = object</b>
+ *         <p><code>
+ *                  t.newObject();
+ *                  t.store("a");
+ *         </code></p>
+ *     </li>
+ *     <li>
+ *         <b>a.b = x.y</b>
+ *         <p><code>
+ *                 t.load("x", "y");
+ *                 t.store("a", "b");
+ *         </code></p>
+ *     </li>
+ *     <li>
+ *         <b>a ~= b</b>
+ *         <p><code>
+ *                 t.load("b");
+ *                 t.storeWeak("a");
+ *         </code></p>
+ *     </li>
+ *     <li>
+ *         <b>dump b</b>
+ *         <p><code>
+ *                 t.load("b");
+ *                 t.dump();
+ *         </code></p>
+ *     </li>
+ *     <li>
+ *         <b>thread { ... body ... }</b>
+ *         <p><code>
+ *             t.runThread(tt -> {
+ *                 ... body ...
+ *             });
+ *         </code></p>
+ *     </li>
+ *
+ * </ul>
+ *
  * @author dnpetrov
  */
 public class VmThreadBuilder {
