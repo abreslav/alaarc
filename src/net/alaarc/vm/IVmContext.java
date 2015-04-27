@@ -1,6 +1,8 @@
 package net.alaarc.vm;
 
 /**
+ * Top-level VM context.
+ *
  * @author dnpetrov
  */
 public interface IVmContext {

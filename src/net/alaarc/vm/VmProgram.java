@@ -4,6 +4,9 @@ import java.util.List;
 import java.util.Objects;
 
 /**
+ * "Program" for VM consists of a main thread (that, in turn, contains child threads), and global variables.
+ * Global variables are mutable objects referenced from instructions within threads.
+ *
  * @author dnpetrov
  */
 public class VmProgram {

@@ -1,6 +1,13 @@
 package net.alaarc.vm;
 
 /**
+ * <p>
+ *     Callback for VM events.
+ * </p>
+ * <p>
+ *     <b>NB:</b> corresponding methods are executed from VM threads.
+ * </p>
+ *
  * @author dnpetrov
  */
 public interface IVmEventsListener {

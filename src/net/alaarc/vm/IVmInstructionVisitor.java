@@ -3,6 +3,8 @@ package net.alaarc.vm;
 import net.alaarc.vm.instructions.*;
 
 /**
+ * Double-dispatch interface for VM instructions.
+ *
  * @author dnpetrov
  */
 public interface IVmInstructionVisitor {

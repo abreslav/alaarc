@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.Objects;
 
 /**
+ * VM thread definition is a sequence of VM instructions.
+ * Instructions are executed on a simple stack machine, stack is local to a thread.
+ *
  * @author dnpetrov
  */
 public class VmThreadDef {

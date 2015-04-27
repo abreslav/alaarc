@@ -98,11 +98,6 @@ public class VmObject implements IVmValue {
     }
 
     @Override
-    public IVmValue retainSlot(String slotName) {
-        return getSlot(slotName).retain();
-    }
-
-    @Override
     public IVmValue setSlot(String slotName, IVmValue newValue) {
         requireAlive();
         return rwMutex.withWriteLock(
