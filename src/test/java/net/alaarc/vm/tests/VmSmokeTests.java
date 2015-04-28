@@ -1,6 +1,5 @@
-package net.alaarc.vm;
+package net.alaarc.vm.tests;
 
-import net.alaarc.vm.builders.VmProgramBuilder;
 import org.junit.Test;
 
 /**
@@ -80,6 +79,9 @@ public class VmSmokeTests {
             t0.postMessage("a.cyclic ~= a");
             t0.load("a");
             t0.storeWeak("a", "cyclic");
+
+            t0.load("a");
+            t0.dump();
 
             t0.postMessage("a ~= a");
             t0.load("a");

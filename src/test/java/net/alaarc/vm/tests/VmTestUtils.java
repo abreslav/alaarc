@@ -1,7 +1,10 @@
-package net.alaarc.vm;
+package net.alaarc.vm.tests;
 
+import net.alaarc.vm.VmProgram;
+import net.alaarc.vm.VmProgramInterpreter;
 import net.alaarc.vm.builders.VmProgramBuilder;
 import net.alaarc.vm.builders.VmThreadBuilder;
+import org.junit.Assert;
 
 import java.util.function.Consumer;
 
@@ -15,6 +18,7 @@ public class VmTestUtils {
         VmProgramInterpreter pi = new VmProgramInterpreter(te, program);
         pi.run();
         te.waitUntilDone();
+        Assert.assertEquals(te.getAssertionsFailedCount(), 0);
     }
 
     public static void runProgram(int count, VmProgram program) {

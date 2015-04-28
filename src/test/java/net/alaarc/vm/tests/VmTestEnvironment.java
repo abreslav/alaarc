@@ -1,8 +1,11 @@
-package net.alaarc.vm;
+package net.alaarc.vm.tests;
 
 import net.alaarc.log.Logger;
+import net.alaarc.vm.IVmEventsListener;
+import net.alaarc.vm.VmEventsLogger;
+import net.alaarc.vm.VmException;
+import net.alaarc.vm.instructions.AssertRc;
 
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -21,12 +24,23 @@ class VmTestEnvironment implements IVmEventsListener {
     private final Lock executionLock = new ReentrantLock();
     private final Condition executionDone = executionLock.newCondition();
 
+    private final AtomicInteger assertionsPassed = new AtomicInteger(0);
+    private final AtomicInteger assertionsFailed = new AtomicInteger(0);
+
     private volatile boolean finished = false;
 
     private final List<VmException> vmExceptions = new ArrayList<>();
 
     public void postMessage(String message) {
         logger.onPostMessage(message);
+    }
+
+    public int getAssertionsPassedCount() {
+        return assertionsPassed.get();
+    }
+
+    public int getAssertionsFailedCount() {
+        return assertionsFailed.get();
     }
 
     @Override
@@ -73,6 +87,18 @@ class VmTestEnvironment implements IVmEventsListener {
     @Override
     public void onPostMessage(String message) {
         logger.onPostMessage(message);
+    }
+
+    @Override
+    public void onAssertionPassed(AssertRc instr) {
+        logger.onAssertionPassed(instr);
+        assertionsPassed.incrementAndGet();
+    }
+
+    @Override
+    public void onAssertionFailed(AssertRc instr) {
+        logger.onAssertionFailed(instr);
+        assertionsFailed.incrementAndGet();
     }
 
     public void waitUntilDone() {
