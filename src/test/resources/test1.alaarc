@@ -1,0 +1,18 @@
+// Alaarc grammar test
+
+a = object      // assignment to global variable
+a.b = object    // assignment to field
+aa = a          // variable in rhs
+aa = a.b        // field dereference in rhs
+x = null        // null in rhs
+x ~= a          // weak assignment
+
+thread {
+    sleepr
+    dump a.b
+}
+
+sleep
+dump a
+
+assertrc a >= 2

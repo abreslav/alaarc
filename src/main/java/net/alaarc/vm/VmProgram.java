@@ -22,5 +22,7 @@ public class VmProgram {
         return mainThread;
     }
 
-
+    public List<VmGlobalVar> getGlobalVars() {
+        return globalVars;
+    }
 }
