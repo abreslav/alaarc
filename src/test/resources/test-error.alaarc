@@ -1,0 +1,7 @@
+// Alaarc grammar test
+
+a = object      // assignment to global variable
+something wrong is here
+aa = a.b        // field dereference in rhs
+x = null        // null in rhs
+x ~= a          // weak assignment
