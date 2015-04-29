@@ -45,8 +45,7 @@ public class VmEventsLogger implements IVmEventsListener {
     @Override
     public void onVmException(VmException e) {
         StringWriter sw = new StringWriter();
-        e.printStackTrace(new PrintWriter(sw));
-        log("Alaarc VM exception: " + e.getMessage() + "\n" + sw.toString());
+        log("Alaarc exception: " + e.getMessage());
     }
 
     @Override

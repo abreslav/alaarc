@@ -146,6 +146,10 @@ public class InterpreterEnvironment implements IVmEventsListener {
         return vmExceptions;
     }
 
+    public int getVmExceptionsCount() {
+        return vmExceptions.size();
+    }
+
     public void finish() {
         logger.finish();
     }

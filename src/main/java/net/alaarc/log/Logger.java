@@ -1,6 +1,9 @@
 package net.alaarc.log;
 
 import java.io.PrintWriter;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
@@ -14,6 +17,8 @@ public class Logger {
 
     private final BlockingQueue<LogMessage> messages;
     private final PrintWriter writer;
+
+    private final DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 
     public Logger(PrintWriter writer, int queueCapacity) {
         this.writer = writer;
@@ -60,7 +65,8 @@ public class Logger {
     }
 
     private void appendMessage(LogMessage message) {
-        writer.println("<" + message.getThreadName() + " @" + message.getTimestamp() + "> " + message.getMessage());
+        String timestamp = dateFormat.format(message.getTimestamp());
+        writer.println("<" + message.getThreadName() + " @" + timestamp + "> " + message.getMessage());
         writer.flush();
     }
 

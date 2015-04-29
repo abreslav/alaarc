@@ -31,7 +31,7 @@ public class Main {
             System.exit(1);
         }
 
-        if (interpreter.getAssertionsFailed() != 0) {
+        if (interpreter.hadAnyProblems()) {
             System.exit(1);
         }
     }

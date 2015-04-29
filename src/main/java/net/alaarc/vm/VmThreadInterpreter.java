@@ -27,7 +27,7 @@ public class VmThreadInterpreter implements Runnable {
 
     @Override
     public void run() {
-        Thread.currentThread().setName("Alaarc-Thread #" + threadDef.getThreadId());
+        Thread.currentThread().setName("Alaarc-" + threadDef.getThreadId());
 
         getVmEventsListener().onThreadStart(threadDef.getThreadId());
 
