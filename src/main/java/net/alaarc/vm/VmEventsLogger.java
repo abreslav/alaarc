@@ -60,7 +60,7 @@ public class VmEventsLogger implements IVmEventsListener {
 
     @Override
     public void onObjectDump(String dump) {
-        log("Object dumped:\n\t" + dump);
+        log("Object dumped: " + dump);
     }
 
     @Override

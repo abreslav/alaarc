@@ -26,6 +26,6 @@ public class PostMessage extends VmInstruction {
 
     @Override
     public String toString() {
-        return "POST_MESSAGE \"" + message + "\"";
+        return "postMessage \"" + message + "\"";
     }
 }

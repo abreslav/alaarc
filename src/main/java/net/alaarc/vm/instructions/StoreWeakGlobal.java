@@ -29,6 +29,6 @@ public class StoreWeakGlobal extends VmInstruction {
 
     @Override
     public String toString() {
-        return "STORE_GLOBAL ~" + globalVar.getName();
+        return "storeWeakGlobal " + globalVar.getName();
     }
 }

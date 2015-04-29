@@ -29,6 +29,6 @@ public class ReleaseGlobal extends VmInstruction {
 
     @Override
     public String toString() {
-        return "RELEASE_GLOBAL " + globalVar.getName();
+        return "releaseGlobal " + globalVar.getName();
     }
 }

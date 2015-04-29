@@ -17,6 +17,6 @@ public class CreateObject extends VmInstruction {
 
     @Override
     public String toString() {
-        return "CREATE_OBJECT";
+        return "createObject";
     }
 }

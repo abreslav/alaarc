@@ -29,6 +29,6 @@ public class StoreGlobal extends VmInstruction {
 
     @Override
     public String toString() {
-        return "STORE_GLOBAL " + globalVar.getName();
+        return "storeGlobal " + globalVar.getName();
     }
 }

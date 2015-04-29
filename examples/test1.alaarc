@@ -9,11 +9,15 @@ y = null
 
 thread {
   sleepr
+  log "Previous 'a':"
+  dump a
   a = object
 }
 
 thread {
   sleepr
+  log "Previous 'x':"
+  dump x
   x = object
 }
 

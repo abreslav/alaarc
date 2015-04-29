@@ -32,6 +32,6 @@ public class AssertRc extends VmInstruction {
 
     @Override
     public String toString() {
-        return "ASSERTRC " + comparisonOperator + " " + number;
+        return "assertRc " + comparisonOperator + " " + number;
     }
 }

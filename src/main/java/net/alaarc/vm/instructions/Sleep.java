@@ -17,6 +17,6 @@ public class Sleep extends VmInstruction {
 
     @Override
     public String toString() {
-        return "SLEEP";
+        return "sleep";
     }
 }

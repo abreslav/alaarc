@@ -28,6 +28,6 @@ public class LoadSlot extends VmInstruction {
 
     @Override
     public String toString() {
-        return "LOAD_SLOT " + slotName;
+        return "loadSlot " + slotName;
     }
 }

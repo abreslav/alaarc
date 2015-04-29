@@ -102,8 +102,8 @@ public class VmThreadInterpreter implements Runnable {
         @Override
         public void visitStoreSlot(StoreSlot instr) {
             // ( nv x --> | {x.slot = nv } )
-            IVmValue newValue = pop();
             IVmValue x = pop();
+            IVmValue newValue = pop();
             IVmValue oldValue = x.setSlot(instr.getSlotName(), newValue);
             x.release();
             release(oldValue);

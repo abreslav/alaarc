@@ -28,6 +28,6 @@ public class StoreWeakSlot extends VmInstruction {
 
     @Override
     public String toString() {
-        return "STORE_SLOT ~" + slotName;
+        return "storeWeakSlot " + slotName;
     }
 }

@@ -29,6 +29,6 @@ public class RunThread extends VmInstruction {
 
     @Override
     public String toString() {
-        return "RUN_THREAD " + threadDef.getThreadId();
+        return "runThread " + threadDef.getThreadId();
     }
 }

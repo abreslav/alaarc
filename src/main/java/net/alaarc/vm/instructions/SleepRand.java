@@ -16,6 +16,6 @@ public class SleepRand extends VmInstruction {
 
     @Override
     public String toString() {
-        return "SLEEP_RAND";
+        return "sleepRand";
     }
 }

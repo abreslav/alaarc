@@ -16,6 +16,6 @@ public class Dump extends VmInstruction {
 
     @Override
     public String toString() {
-        return "DUMP";
+        return "dump";
     }
 }

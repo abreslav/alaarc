@@ -14,6 +14,6 @@ public class PushNull extends VmInstruction {
 
     @Override
     public String toString() {
-        return "PUSH_NULL";
+        return "pushNull";
     }
 }
