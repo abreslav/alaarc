@@ -1,6 +1,5 @@
 package net.alaarc.compiler;
 
-import com.google.common.collect.Lists;
 import net.alaarc.ast.nodes.AstStmt;
 import net.alaarc.ast.nodes.AstThreadBody;
 import net.alaarc.vm.VmGlobalVar;
@@ -47,7 +46,9 @@ public class ThreadCodeGenerator {
         // Body blocks in reverse order.
         List<List<VmInstruction>> revBodyBlocks = new ArrayList<>();
 
-        for (AstStmt stmt : Lists.reverse(threadBody.getStatements())) {
+        List<AstStmt> reversedBody = new ArrayList<>(threadBody.getStatements());
+        Collections.reverse(reversedBody);
+        for (AstStmt stmt : reversedBody) {
             StmtCodeGenerator stmtCodeGen = new StmtCodeGenerator(programCodeGenerator, this);
             stmtCodeGen.run(stmt);
             
@@ -69,8 +70,8 @@ public class ThreadCodeGenerator {
 
         // Join generated body blocks (stored in reverse order).
         List<VmInstruction> body = new ArrayList<>();
-        Lists.reverse(revBodyBlocks)
-                .forEach(body::addAll);
+        Collections.reverse(revBodyBlocks);
+        revBodyBlocks.forEach(body::addAll);
 
         this.threadDef = new VmThreadDef(newThreadId, body);
     }

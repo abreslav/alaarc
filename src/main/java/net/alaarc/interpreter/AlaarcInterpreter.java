@@ -20,14 +20,14 @@ public class AlaarcInterpreter {
     }
 
     public void run() {
-        InterpreterEnvironment interpreterEnvironment;
+        InterpreterEnvironment exec;
         try {
-            interpreterEnvironment = new InterpreterEnvironment(options);
+            exec = new InterpreterEnvironment(options);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
-        VmProgramInterpreter vmProgramInterpreter = new VmProgramInterpreter(interpreterEnvironment, vmProgram);
+        VmProgramInterpreter vmProgramInterpreter = new VmProgramInterpreter(exec, vmProgram);
 
         assertionsPassed = 0;
         assertionsFailed = 0;
@@ -35,20 +35,21 @@ public class AlaarcInterpreter {
         int times = options.getTimes();
         for (int i = 0; i < times; ++i) {
             vmProgramInterpreter.run();
-            interpreterEnvironment.waitUntilDone();
-            int passed = interpreterEnvironment.getAssertionsPassedCount();
-            int failed = interpreterEnvironment.getAssertionsFailedCount();
-            System.out.println("Run " + (i+1) + " of " + times);
-            System.out.println("Assertions passed: " + passed);
-            System.out.println("Assertions failed: " + failed);
-            System.out.println();
+            exec.waitUntilDone();
+            int passed = exec.getAssertionsPassedCount();
+            int failed = exec.getAssertionsFailedCount();
+            exec.postMessage("Run " + (i + 1) + " of " + times);
+            exec.postMessage("Assertions passed: " + passed);
+            exec.postMessage("Assertions failed: " + failed);
             assertionsPassed += passed;
             assertionsFailed += failed;
             vmProgram.reset();
         }
 
-        System.out.println("Total assertions passed: " + assertionsPassed);
-        System.out.println("Total assertions failed: " + assertionsFailed);
+        exec.postMessage("--- DONE ---");
+        exec.postMessage("Total assertions passed: " + assertionsPassed);
+        exec.postMessage("Total assertions failed: " + assertionsFailed);
+        exec.finish();
     }
 
     public int getAssertionsPassed() {

@@ -1,14 +1,13 @@
 package net.alaarc.interpreter;
 
 import net.alaarc.AlaarcOptions;
+import net.alaarc.log.LogMessage;
 import net.alaarc.log.Logger;
 import net.alaarc.vm.IVmEventsListener;
 import net.alaarc.vm.VmEventsLogger;
 import net.alaarc.vm.VmException;
 import net.alaarc.vm.instructions.AssertRc;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -24,7 +23,8 @@ import java.util.concurrent.locks.ReentrantLock;
 public class InterpreterEnvironment implements IVmEventsListener {
     private final AtomicInteger threadsCount = new AtomicInteger(0);
 
-    private final VmEventsLogger logger;
+    private final VmEventsLogger vmEventsLogger;
+    private final Logger logger;
 
     private final Lock executionLock = new ReentrantLock();
     private final Condition executionDone = executionLock.newCondition();
@@ -37,7 +37,8 @@ public class InterpreterEnvironment implements IVmEventsListener {
     private final List<VmException> vmExceptions = new ArrayList<>();
 
     public InterpreterEnvironment(AlaarcOptions options) throws IOException {
-        logger = new VmEventsLogger(resolveLogger(options));
+        logger = resolveLogger(options);
+        vmEventsLogger = new VmEventsLogger(resolveLogger(options));
     }
 
     private static Logger resolveLogger(AlaarcOptions options) throws IOException {
@@ -50,7 +51,11 @@ public class InterpreterEnvironment implements IVmEventsListener {
     }
 
     public void postMessage(String message) {
-        logger.onPostMessage(message);
+        try {
+            logger.log(LogMessage.create(message));
+        } catch (InterruptedException e) {
+            // swallow it
+        }
     }
 
     public int getAssertionsPassedCount() {
@@ -63,33 +68,33 @@ public class InterpreterEnvironment implements IVmEventsListener {
 
     @Override
     public void onObjectDisposed(long objectId) {
-        logger.onObjectDisposed(objectId);
+        vmEventsLogger.onObjectDisposed(objectId);
     }
 
     @Override
     public void onJavaException(Exception e) {
-        logger.onJavaException(e);
+        vmEventsLogger.onJavaException(e);
         throw new RuntimeException(e);
     }
 
     @Override
     public void onVmException(VmException e) {
-        logger.onVmException(e);
+        vmEventsLogger.onVmException(e);
         vmExceptions.add(e);
     }
 
     @Override
     public void onThreadStart(int threadId) {
-        logger.onThreadStart(threadId);
+        vmEventsLogger.onThreadStart(threadId);
         threadsCount.incrementAndGet();
     }
 
     @Override
     public void onThreadFinish(int threadId) {
-        logger.onThreadFinish(threadId);
+        vmEventsLogger.onThreadFinish(threadId);
         int numThreads = threadsCount.decrementAndGet();
         if (numThreads == 0) {
-            logger.finish();
+            vmEventsLogger.finish();
             finished = true;
             executionLock.lock();
             executionDone.signalAll();
@@ -99,23 +104,23 @@ public class InterpreterEnvironment implements IVmEventsListener {
 
     @Override
     public void onObjectDump(String dump) {
-        logger.onObjectDump(dump);
+        vmEventsLogger.onObjectDump(dump);
     }
 
     @Override
     public void onPostMessage(String message) {
-        logger.onPostMessage(message);
+        vmEventsLogger.onPostMessage(message);
     }
 
     @Override
     public void onAssertionPassed(AssertRc instr) {
-        logger.onAssertionPassed(instr);
+        vmEventsLogger.onAssertionPassed(instr);
         assertionsPassed.incrementAndGet();
     }
 
     @Override
     public void onAssertionFailed(AssertRc instr) {
-        logger.onAssertionFailed(instr);
+        vmEventsLogger.onAssertionFailed(instr);
         assertionsFailed.incrementAndGet();
     }
 
@@ -139,5 +144,9 @@ public class InterpreterEnvironment implements IVmEventsListener {
 
     public List<VmException> getVmExceptions() {
         return vmExceptions;
+    }
+
+    public void finish() {
+        logger.finish();
     }
 }
