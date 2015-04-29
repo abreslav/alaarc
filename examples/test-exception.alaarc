@@ -1,2 +1,9 @@
 a = object
+
+thread {
+    x = object
+    x = null
+    x.a = a
+}
+
 b = a.xxx   // try reading non-existing field
