@@ -8,15 +8,15 @@ import net.alaarc.vm.IVmInstructionVisitor;
  *
  * @author dnpetrov
  */
-public class NewObject extends VmInstruction {
+public class CreateObject extends VmInstruction {
 
     @Override
     public void accept(IVmInstructionVisitor v) {
-        v.visitNewObject(this);
+        v.visitCreateObject(this);
     }
 
     @Override
     public String toString() {
-        return "NEW_OBJECT";
+        return "CREATE_OBJECT";
     }
 }

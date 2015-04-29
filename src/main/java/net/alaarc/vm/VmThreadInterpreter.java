@@ -159,7 +159,7 @@ public class VmThreadInterpreter implements Runnable {
         }
 
         @Override
-        public void visitNewObject(NewObject instr) {
+        public void visitCreateObject(CreateObject instr) {
             // ( --> [object] )
             IVmValue x = getObjectFactory().createObject();
             push(x.retain());
@@ -189,7 +189,7 @@ public class VmThreadInterpreter implements Runnable {
             IVmValue x = pop();
             long refCount = x.getRefCount();
             long num = instr.getNumber();
-            if (instr.getComparisonOp().compare(refCount, num)) {
+            if (instr.getComparisonOperator().compare(refCount, num)) {
                 getVmEventsListener().onAssertionPassed(instr);
             } else {
                 getVmEventsListener().onAssertionFailed(instr);

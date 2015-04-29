@@ -17,6 +17,7 @@ public class VmProgramBuilder {
     private final Map<String, VmGlobalVar> globalVars = new HashMap<>();
     private int firstThreadId = 1;
     private VmThreadDef mainThreadDef;
+    private List<VmThreadDef> vmThreadDefs = new ArrayList<>();
 
     public VmGlobalVar global(String name) {
         return globalVars.computeIfAbsent(name, VmGlobalVar::new);
@@ -30,9 +31,13 @@ public class VmProgramBuilder {
         return mainThreadDef;
     }
 
+    void addThreadDef(VmThreadDef threadDef) {
+        vmThreadDefs.add(threadDef);
+    }
+
     public VmProgram buildProgram() {
         List<VmGlobalVar> globalVarList = new ArrayList<>(globalVars.values());
-        return new VmProgram(globalVarList, mainThreadDef);
+        return new VmProgram(globalVarList, mainThreadDef, vmThreadDefs);
     }
 
     public static VmProgram withMainThread(Consumer<VmThreadBuilder> mainThread) {
@@ -41,6 +46,7 @@ public class VmProgramBuilder {
         mainThread.accept(mainThreadBuilder);
         VmThreadDef mainThreadDef = mainThreadBuilder.buildThreadDef();
         programBuilder.setMainThreadDef(mainThreadDef);
+        programBuilder.addThreadDef(mainThreadDef);
         return programBuilder.buildProgram();
     }
 

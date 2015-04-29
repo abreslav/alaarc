@@ -12,19 +12,16 @@ import java.util.List;
  * @author dnpetrov
  */
 public class AstThreadBody extends AstNode {
-    private final List<AstStmt> statements = new ArrayList<>();
+    private final List<AstStmt> statements;
 
-    public AstThreadBody(String sourceFileName, int lineNumber) {
+    public AstThreadBody(String sourceFileName, int lineNumber, List<AstStmt> statements) {
         super(sourceFileName, lineNumber);
+        this.statements = statements;
     }
 
     @Override
     public void accept(IAstNodeVisitor visitor) {
         visitor.visitThreadBody(this);
-    }
-
-    public void addStatement(AstStmt stmt) {
-        statements.add(stmt);
     }
 
     public List<AstStmt> getStatements() {

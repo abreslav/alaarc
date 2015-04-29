@@ -1,6 +1,11 @@
 package net.alaarc.ast;
 
 import net.alaarc.ast.nodes.*;
+import net.alaarc.ast.nodes.exprs.AstFieldExpr;
+import net.alaarc.ast.nodes.exprs.AstNameExpr;
+import net.alaarc.ast.nodes.exprs.AstNewObjectExpr;
+import net.alaarc.ast.nodes.exprs.AstNullExpr;
+import net.alaarc.ast.nodes.stmts.*;
 
 import java.io.PrintStream;
 import java.io.PrintWriter;
@@ -52,11 +57,6 @@ public class AstDumper implements IAstNodeVisitor {
             node.accept(this);
         }
         indent -= 2;
-    }
-
-    @Override
-    public void visitNode(AstNode node) {
-        node(node, node.toString());
     }
 
     @Override

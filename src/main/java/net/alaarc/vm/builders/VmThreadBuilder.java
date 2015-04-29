@@ -1,5 +1,6 @@
 package net.alaarc.vm.builders;
 
+import net.alaarc.vm.ComparisonOperator;
 import net.alaarc.vm.VmGlobalVar;
 import net.alaarc.vm.VmInstruction;
 import net.alaarc.vm.VmThreadDef;
@@ -83,7 +84,7 @@ public class VmThreadBuilder {
     }
 
     public void newObject() {
-        body.add(new NewObject());
+        body.add(new CreateObject());
     }
 
     public void postMessage(String message) {
@@ -104,6 +105,7 @@ public class VmThreadBuilder {
         childThread.accept(childBuilder);
         VmThreadDef childThreadDef = childBuilder.buildThreadDef();
         body.add(new RunThread(childThreadDef));
+        programBuilder.addThreadDef(childThreadDef);
     }
 
     public void sleep() {
@@ -167,32 +169,32 @@ public class VmThreadBuilder {
         }
     }
 
-    public void assertRc(AssertRc.ComparisonOp op, long num) {
+    public void assertRc(ComparisonOperator op, long num) {
         body.add(new AssertRc(op, num));
     }
 
     public void assertRcEq(long num) {
-        assertRc(AssertRc.ComparisonOp.EQ, num);
+        assertRc(ComparisonOperator.EQ, num);
     }
 
     public void assertRcNeq(long num) {
-        assertRc(AssertRc.ComparisonOp.NEQ, num);
+        assertRc(ComparisonOperator.NEQ, num);
     }
 
     public void assertRcLe(long num) {
-        assertRc(AssertRc.ComparisonOp.LE, num);
+        assertRc(ComparisonOperator.LE, num);
     }
 
     public void assertRcLt(long num) {
-        assertRc(AssertRc.ComparisonOp.LT, num);
+        assertRc(ComparisonOperator.LT, num);
     }
 
     public void assertRcGe(long num) {
-        assertRc(AssertRc.ComparisonOp.GE, num);
+        assertRc(ComparisonOperator.GE, num);
     }
 
     public void assertRcGt(long num) {
-        assertRc(AssertRc.ComparisonOp.GT, num);
+        assertRc(ComparisonOperator.GT, num);
     }
 
 }

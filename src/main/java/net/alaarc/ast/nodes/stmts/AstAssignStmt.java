@@ -1,30 +1,27 @@
-package net.alaarc.ast.nodes;
+package net.alaarc.ast.nodes.stmts;
 
+import net.alaarc.ast.nodes.operators.AstAssignmentOperator;
 import net.alaarc.ast.IAstNodeVisitor;
-
-import java.io.PrintWriter;
+import net.alaarc.ast.nodes.AstExpr;
+import net.alaarc.ast.nodes.AstStmt;
 
 /**
  * @author dnpetrov
  */
 public class AstAssignStmt extends AstStmt {
-    public enum AssignmentOperator {
-        ASSIGN,
-        ASSIGN_WEAK
-    }
 
     private final AstExpr lhs;
     private final AstExpr rhs;
-    private final AssignmentOperator operator;
+    private final AstAssignmentOperator operator;
 
-    public AstAssignStmt(String sourceFileName, int lineNumber, AstExpr lhs, AssignmentOperator operator, AstExpr rhs) {
+    public AstAssignStmt(String sourceFileName, int lineNumber, AstExpr lhs, AstAssignmentOperator operator, AstExpr rhs) {
         super(sourceFileName, lineNumber);
         this.operator = operator;
         this.lhs = lhs;
         this.rhs = rhs;
     }
 
-    public AssignmentOperator getOperator() {
+    public AstAssignmentOperator getOperator() {
         return operator;
     }
 

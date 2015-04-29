@@ -1,6 +1,11 @@
 package net.alaarc.ast;
 
 import net.alaarc.ast.nodes.*;
+import net.alaarc.ast.nodes.exprs.AstFieldExpr;
+import net.alaarc.ast.nodes.exprs.AstNameExpr;
+import net.alaarc.ast.nodes.exprs.AstNewObjectExpr;
+import net.alaarc.ast.nodes.exprs.AstNullExpr;
+import net.alaarc.ast.nodes.stmts.*;
 
 /**
  * Double-dispatch interface for AST nodes.
@@ -8,7 +13,9 @@ import net.alaarc.ast.nodes.*;
  * @author dnpetrov
  */
 public interface IAstNodeVisitor {
-    void visitNode(AstNode node);
+    default void visitNode(AstNode node) {
+        throw new IllegalArgumentException("Unexpected node: " + node.toString());
+    }
 
     default void visitProgram(AstProgram program) {
         visitNode(program);

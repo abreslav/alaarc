@@ -1,11 +1,21 @@
-package net.alaarc.ast;
+package net.alaarc.compiler;
 
+import net.alaarc.ast.AstNode;
 import net.alaarc.ast.nodes.*;
+import net.alaarc.ast.nodes.exprs.AstFieldExpr;
+import net.alaarc.ast.nodes.exprs.AstNameExpr;
+import net.alaarc.ast.nodes.exprs.AstNewObjectExpr;
+import net.alaarc.ast.nodes.exprs.AstNullExpr;
+import net.alaarc.ast.nodes.operators.AstAssignmentOperator;
+import net.alaarc.ast.nodes.operators.AstComparisonOperator;
+import net.alaarc.ast.nodes.stmts.*;
 import net.alaarc.grammar.AlaarcBaseVisitor;
 import net.alaarc.grammar.AlaarcParser;
-import net.alaarc.vm.instructions.AssertRc;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.TerminalNode;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Builds AST from ANTLR parse tree.
@@ -31,12 +41,12 @@ public class AstBuilder extends AlaarcBaseVisitor<AstNode> {
 
     @Override
     public AstNode visitThreadBody(AlaarcParser.ThreadBodyContext ctx) {
-        AstThreadBody body = new AstThreadBody(sourceFileName, getLineNumber(ctx));
-        for (AlaarcParser.StmtContext stmtc : ctx.stmt()) {
-            AstStmt stmt = (AstStmt) visitStmt(stmtc);
-            body.addStatement(stmt);
+        List<AstStmt> bodyStmts = new ArrayList<>();
+        for (AlaarcParser.StmtContext s : ctx.stmt()) {
+            AstStmt stmt = (AstStmt) visitStmt(s);
+            bodyStmts.add(stmt);
         }
-        return body;
+        return new AstThreadBody(sourceFileName, getLineNumber(ctx), bodyStmts);
     }
 
     @Override
@@ -68,7 +78,7 @@ public class AstBuilder extends AlaarcBaseVisitor<AstNode> {
     public AstNode visitAssignStmt(AlaarcParser.AssignStmtContext ctx) {
         AstExpr lhs = (AstExpr) visitLvExpr(ctx.lvExpr());
         AstExpr rhs = (AstExpr) visitRvExpr(ctx.rvExpr());
-        AstAssignStmt.AssignmentOperator assignOp = getAssignmentOperator(ctx.assignOp());
+        AstAssignmentOperator assignOp = getAssignmentOperator(ctx.assignOp());
         return new AstAssignStmt(sourceFileName, getLineNumber(ctx.assignOp()), lhs, assignOp, rhs);
     }
 
@@ -104,24 +114,24 @@ public class AstBuilder extends AlaarcBaseVisitor<AstNode> {
     @Override
     public AstNode visitAssertRcStmt(AlaarcParser.AssertRcStmtContext ctx) {
         AstExpr expr = (AstExpr) visitLvExpr(ctx.lvExpr());
-        AstAssertRcStmt.ComparisonOperator operator = getComparisonOperator(ctx.comparisonOp());
+        AstComparisonOperator operator = getComparisonOperator(ctx.comparisonOp());
         long number = parseIntegral(ctx.INT());
         return new AstAssertRcStmt(sourceFileName, getLineNumber(ctx), expr, operator, number);
     }
 
-    private AstAssertRcStmt.ComparisonOperator getComparisonOperator(AlaarcParser.ComparisonOpContext ctx) {
+    private AstComparisonOperator getComparisonOperator(AlaarcParser.ComparisonOpContext ctx) {
         if (ctx.EQ() != null) {
-            return AstAssertRcStmt.ComparisonOperator.EQ;
+            return AstComparisonOperator.EQ;
         } else if (ctx.NEQ() != null) {
-            return AstAssertRcStmt.ComparisonOperator.NEQ;
+            return AstComparisonOperator.NEQ;
         } else if (ctx.LE() != null) {
-            return AstAssertRcStmt.ComparisonOperator.LE;
+            return AstComparisonOperator.LE;
         } else if (ctx.LT() != null) {
-            return AstAssertRcStmt.ComparisonOperator.LT;
+            return AstComparisonOperator.LT;
         } else if (ctx.GE() != null) {
-            return AstAssertRcStmt.ComparisonOperator.GE;
+            return AstComparisonOperator.GE;
         } else if (ctx.GT() != null) {
-            return AstAssertRcStmt.ComparisonOperator.GT;
+            return AstComparisonOperator.GT;
         } else {
             throw new RuntimeException("Unexpected comparison operator: " + getDiagnostics(ctx));
         }
@@ -173,11 +183,11 @@ public class AstBuilder extends AlaarcBaseVisitor<AstNode> {
         return ctx.getStart().getLine();
     }
 
-    private AstAssignStmt.AssignmentOperator getAssignmentOperator(AlaarcParser.AssignOpContext ctx) {
+    private AstAssignmentOperator getAssignmentOperator(AlaarcParser.AssignOpContext ctx) {
         if (ctx.ASSIGN() != null) {
-            return AstAssignStmt.AssignmentOperator.ASSIGN;
+            return AstAssignmentOperator.ASSIGN;
         } else if (ctx.ASSIGN_WEAK() != null) {
-            return AstAssignStmt.AssignmentOperator.ASSIGN_WEAK;
+            return AstAssignmentOperator.ASSIGN_WEAK;
         } else {
             throw new RuntimeException("Unexpected assignment operator: " + getDiagnostics(ctx));
         }

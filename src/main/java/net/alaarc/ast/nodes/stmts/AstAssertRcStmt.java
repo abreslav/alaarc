@@ -1,29 +1,27 @@
-package net.alaarc.ast.nodes;
+package net.alaarc.ast.nodes.stmts;
 
+import net.alaarc.ast.nodes.operators.AstComparisonOperator;
 import net.alaarc.ast.IAstNodeVisitor;
-
-import java.io.PrintWriter;
+import net.alaarc.ast.nodes.AstExpr;
+import net.alaarc.ast.nodes.AstStmt;
 
 /**
  * @author dnpetrov
  */
 public class AstAssertRcStmt extends AstStmt {
-    public enum ComparisonOperator {
-        EQ, NEQ, LE, LT, GE, GT;
-    }
 
-    private final ComparisonOperator operator;
+    private final AstComparisonOperator operator;
     private final long number;
     private final AstExpr operand;
 
-    public AstAssertRcStmt(String sourceFileName, int lineNumber, AstExpr operand, ComparisonOperator operator, long number) {
+    public AstAssertRcStmt(String sourceFileName, int lineNumber, AstExpr operand, AstComparisonOperator operator, long number) {
         super(sourceFileName, lineNumber);
         this.operand = operand;
         this.operator = operator;
         this.number = number;
     }
 
-    public ComparisonOperator getOperator() {
+    public AstComparisonOperator getOperator() {
         return operator;
     }
 

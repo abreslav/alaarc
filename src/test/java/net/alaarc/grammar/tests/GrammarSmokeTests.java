@@ -1,17 +1,15 @@
 package net.alaarc.grammar.tests;
 
-import net.alaarc.ast.AstBuilder;
+import net.alaarc.TestUtils;
 import net.alaarc.ast.AstDumper;
-import net.alaarc.ast.AstNode;
 import net.alaarc.ast.nodes.AstProgram;
+import net.alaarc.compiler.AstBuilder;
 import net.alaarc.grammar.AlaarcLexer;
 import net.alaarc.grammar.AlaarcParser;
 import org.antlr.v4.runtime.*;
-import org.antlr.v4.runtime.tree.ParseTree;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 
 /**
  * @author dnpetrov
@@ -33,7 +31,7 @@ public class GrammarSmokeTests {
     }
 
     private void parseProgram(final String path) throws IOException {
-        AlaarcLexer lexer = new AlaarcLexer(getResourceAsInput(path));
+        AlaarcLexer lexer = new AlaarcLexer(TestUtils.getResourceAsAntlrInput(path));
         AlaarcParser parser = new AlaarcParser(new CommonTokenStream(lexer));
         parser.addErrorListener(new BaseErrorListener() {
             @Override
@@ -50,14 +48,8 @@ public class GrammarSmokeTests {
         AstBuilder astBuilder = new AstBuilder(path);
         AstProgram program = astBuilder.buildProgram(parsed);
         System.out.println("AstProgram:");
-        dumpAstNode(program, 2);
+        AstDumper.dump(System.out, program, 2);
     }
 
-    private void dumpAstNode(AstNode node, int indent) {
-        AstDumper.dump(System.out, node, indent);
-    }
 
-    private ANTLRInputStream getResourceAsInput(String path) throws IOException {
-        return new ANTLRInputStream(getClass().getResourceAsStream(path));
-    }
 }

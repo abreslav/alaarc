@@ -7,6 +7,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
+ * Global variable in Alaarc program.
+ * <p>
+ *     <b>NB:</b> global variables are stateful.
+ *     It might be a good idea to make them stateless and provide a separate "binding" phase before execution,
+ *     generating internal "global slots" in some separate "program execution context".
+ *     So far, keep it simple.
+ * </p>
+ *
+ *
  * @author dnpetrov
  */
 public class VmGlobalVar {
@@ -60,6 +69,11 @@ public class VmGlobalVar {
         }
     }
 
+    public void reset() {
+        value.set(VmNull.NULL);
+        scopeCount.set(1);
+    }
+
     @Override
     public boolean equals(Object obj) {
         // Global variables are unique.
@@ -70,5 +84,10 @@ public class VmGlobalVar {
     public int hashCode() {
         // Two global variables with the same name should be the same instance.
         return name.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return name;
     }
 }

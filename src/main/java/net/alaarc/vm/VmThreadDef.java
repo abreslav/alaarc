@@ -1,5 +1,6 @@
 package net.alaarc.vm;
 
+import java.io.PrintWriter;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -30,5 +31,12 @@ public class VmThreadDef {
     @Override
     public String toString() {
         return "thread #" + threadId;
+    }
+
+    public void dump(PrintWriter pw) {
+        pw.println("Thread #" + threadId + ":");
+        for (VmInstruction instr : body) {
+            pw.println("  " + instr.toString());
+        }
     }
 }

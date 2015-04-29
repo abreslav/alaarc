@@ -13,4 +13,9 @@ public class SleepRand extends VmInstruction {
     public void accept(IVmInstructionVisitor v) {
         v.visitSleepRand(this);
     }
+
+    @Override
+    public String toString() {
+        return "SLEEP_RAND";
+    }
 }

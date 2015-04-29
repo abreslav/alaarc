@@ -18,7 +18,7 @@ public interface IVmInstructionVisitor {
     void visitSleepRand(SleepRand instr);
     void visitDump(Dump instr);
     void visitRunThread(RunThread instr);
-    void visitNewObject(NewObject instr);
+    void visitCreateObject(CreateObject instr);
     void visitRetainGlobal(RetainGlobal instr);
     void visitReleaseGlobal(ReleaseGlobal instr);
     void visitPostMessage(PostMessage instr);
