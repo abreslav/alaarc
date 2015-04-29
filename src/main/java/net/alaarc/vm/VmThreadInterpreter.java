@@ -29,8 +29,6 @@ public class VmThreadInterpreter implements Runnable {
     public void run() {
         Thread.currentThread().setName("Alaarc-" + threadDef.getThreadId());
 
-        getVmEventsListener().onThreadStart(threadDef.getThreadId());
-
         // Control flow is linear, so we don't need program counter.
         for (VmInstruction instr : threadDef.getBody()) {
             try {
@@ -160,6 +158,7 @@ public class VmThreadInterpreter implements Runnable {
         @Override
         public void visitRunThread(RunThread instr) {
             // ( --> | {thread {...} } )
+            getVmEventsListener().onThreadSpawned(instr.getThreadDef().getThreadId());
             VmThreadInterpreter child = new VmThreadInterpreter(vmContext, instr.getThreadDef());
             new Thread(child).start();
         }

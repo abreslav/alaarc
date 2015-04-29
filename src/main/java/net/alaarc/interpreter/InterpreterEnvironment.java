@@ -84,8 +84,8 @@ public class InterpreterEnvironment implements IVmEventsListener {
     }
 
     @Override
-    public void onThreadStart(int threadId) {
-        vmEventsLogger.onThreadStart(threadId);
+    public void onThreadSpawned(int threadId) {
+        vmEventsLogger.onThreadSpawned(threadId);
         threadsCount.incrementAndGet();
     }
 
@@ -130,7 +130,9 @@ public class InterpreterEnvironment implements IVmEventsListener {
             while (true) {
                 try {
                     executionDone.await();
+
                     if (finished) {
+                        logger.finish();
                         break;
                     }
                 } catch (InterruptedException e) {
@@ -150,7 +152,4 @@ public class InterpreterEnvironment implements IVmEventsListener {
         return vmExceptions.size();
     }
 
-    public void finish() {
-        logger.finish();
-    }
 }

@@ -32,6 +32,7 @@ public class VmProgramInterpreter implements IVmContext, Runnable {
 
     @Override
     public void run() {
+        vmEventsListener.onThreadSpawned(program.getMainThread().getThreadId());
         new Thread(new VmThreadInterpreter(this, program.getMainThread())).start();
     }
 }

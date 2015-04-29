@@ -49,8 +49,8 @@ public class VmEventsLogger implements IVmEventsListener {
     }
 
     @Override
-    public void onThreadStart(int threadId) {
-        log("Thread started, threadId=" + threadId);
+    public void onThreadSpawned(int threadId) {
+        log("Thread spawned, threadId=" + threadId);
     }
 
     @Override

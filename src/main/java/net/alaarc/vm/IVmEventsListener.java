@@ -19,7 +19,7 @@ public interface IVmEventsListener {
 
     void onVmException(VmException e);
 
-    void onThreadStart(int threadId);
+    void onThreadSpawned(int threadId);
 
     void onThreadFinish(int threadId);
 

@@ -20,6 +20,8 @@ public class Logger {
 
     private final DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 
+    private volatile boolean finished = false;
+
     public Logger(PrintWriter writer, int queueCapacity) {
         this.writer = writer;
         this.messages = new ArrayBlockingQueue<>(queueCapacity);
@@ -44,6 +46,7 @@ public class Logger {
                 try {
                     LogMessage message = messages.take();
                     if (message.isSpoiled()) {
+                        finished = true;
                         break;
                     } else {
                         appendMessage(message);
@@ -74,7 +77,7 @@ public class Logger {
         // sends a spoiled message
         try {
             log(LogMessage.spoiled());
-            while (!messages.isEmpty());
+            while (!finished);
         } catch (InterruptedException e) {
             // swallow it
         }

@@ -52,7 +52,6 @@ public class AlaarcInterpreter {
             vmProgram.reset();
         }
 
-        exec.finish();
         System.out.println("--- DONE ---");
         System.out.println("Total assertions passed: " + assertionsPassed);
         System.out.println("Total assertions failed: " + assertionsFailed);
