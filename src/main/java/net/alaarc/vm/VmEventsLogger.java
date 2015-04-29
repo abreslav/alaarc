@@ -6,6 +6,7 @@ import net.alaarc.vm.instructions.AssertRc;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Objects;
 
 /**
  * @author dnpetrov
@@ -14,7 +15,7 @@ public class VmEventsLogger implements IVmEventsListener {
     private final Logger logger;
 
     public VmEventsLogger(Logger logger) {
-        this.logger = logger;
+        this.logger = Objects.requireNonNull(logger);
     }
 
     private void log(String message) {
