@@ -50,6 +50,12 @@ public class InterpreterEnvironment implements IVmEventsListener {
         }
     }
 
+    public void reset() {
+        assertionsPassed.set(0);
+        assertionsFailed.set(0);
+        vmExceptions.clear();
+    }
+
     public void postMessage(String message) {
         try {
             logger.log(LogMessage.create(message));

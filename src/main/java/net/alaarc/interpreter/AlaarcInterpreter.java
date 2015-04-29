@@ -91,7 +91,9 @@ public class AlaarcInterpreter {
             assertionsPassed += passed;
             assertionsFailed += failed;
             alaarcExceptions += exns;
+
             vmProgram.reset();
+            exec.reset();
         }
 
         System.out.println("--- DONE ---");
