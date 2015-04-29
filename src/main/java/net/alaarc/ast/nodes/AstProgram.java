@@ -1,6 +1,7 @@
 package net.alaarc.ast.nodes;
 
 import net.alaarc.ast.AstNode;
+import net.alaarc.ast.IAstNodeVisitor;
 
 import java.io.PrintWriter;
 
@@ -20,8 +21,9 @@ public class AstProgram extends AstNode {
     }
 
     @Override
-    public void dump(PrintWriter out, int indent) {
-        indentLocation(out, indent).println("program");
-        mainThreadBody.dump(out, indent+2);
+    public void accept(IAstNodeVisitor visitor) {
+        visitor.visitProgram(this);
     }
+
+
 }

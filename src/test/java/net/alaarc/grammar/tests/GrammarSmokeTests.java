@@ -1,6 +1,7 @@
 package net.alaarc.grammar.tests;
 
 import net.alaarc.ast.AstBuilder;
+import net.alaarc.ast.AstDumper;
 import net.alaarc.ast.AstNode;
 import net.alaarc.ast.nodes.AstProgram;
 import net.alaarc.grammar.AlaarcLexer;
@@ -19,8 +20,16 @@ public class GrammarSmokeTests {
 
     @Test
     public void testGrammar0() throws Exception {
-        final String path = "/test1.alaarc";
-        parseProgram(path);
+        parseProgram("/test1.alaarc");
+    }
+
+    @Test
+    public void testGrammarError() throws Exception {
+        try {
+            parseProgram("/test-error.alaarc");
+        } catch (Exception e) {
+            // That's ok, we were expecting it
+        }
     }
 
     private void parseProgram(final String path) throws IOException {
@@ -29,7 +38,9 @@ public class GrammarSmokeTests {
         parser.addErrorListener(new BaseErrorListener() {
             @Override
             public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line, int charPositionInLine, String msg, RecognitionException e) {
-                throw new IllegalStateException(path + ":" + line + ": " + msg, e);
+                final String message = path + ":" + line + ": " + msg;
+                System.err.println(message);
+                throw new IllegalStateException(message, e);
             }
         });
         AlaarcParser.InitContext parsed = parser.init();
@@ -43,9 +54,7 @@ public class GrammarSmokeTests {
     }
 
     private void dumpAstNode(AstNode node, int indent) {
-        final PrintWriter dump = new PrintWriter(System.out);
-        node.dump(dump, indent);
-        dump.flush();
+        AstDumper.dump(System.out, node, indent);
     }
 
     private ANTLRInputStream getResourceAsInput(String path) throws IOException {

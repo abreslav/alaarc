@@ -1,5 +1,7 @@
 package net.alaarc.ast.nodes;
 
+import net.alaarc.ast.IAstNodeVisitor;
+
 import java.io.PrintWriter;
 
 /**
@@ -18,7 +20,8 @@ public class AstNameExpr extends  AstExpr {
     }
 
     @Override
-    public void dump(PrintWriter out, int indent) {
-        indentLocation(out, indent).println("name " + name);
+    public void accept(IAstNodeVisitor visitor) {
+        visitor.visitNameExpr(this);
     }
+
 }

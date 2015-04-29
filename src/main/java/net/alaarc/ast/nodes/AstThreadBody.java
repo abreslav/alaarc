@@ -1,6 +1,7 @@
 package net.alaarc.ast.nodes;
 
 import net.alaarc.ast.AstNode;
+import net.alaarc.ast.IAstNodeVisitor;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -17,20 +18,17 @@ public class AstThreadBody extends AstNode {
         super(sourceFileName, lineNumber);
     }
 
+    @Override
+    public void accept(IAstNodeVisitor visitor) {
+        visitor.visitThreadBody(this);
+    }
+
     public void addStatement(AstStmt stmt) {
         statements.add(stmt);
     }
 
     public List<AstStmt> getStatements() {
         return Collections.unmodifiableList(statements);
-    }
-
-    @Override
-    public void dump(PrintWriter out, int indent) {
-        indentLocation(out, indent).println("threadBody");
-        for (AstStmt stmt : statements) {
-            stmt.dump(out, indent+2);
-        }
     }
 
 }

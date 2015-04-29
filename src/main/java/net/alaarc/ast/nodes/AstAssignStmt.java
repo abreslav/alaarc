@@ -1,18 +1,13 @@
 package net.alaarc.ast.nodes;
 
+import net.alaarc.ast.IAstNodeVisitor;
+
 import java.io.PrintWriter;
 
 /**
  * @author dnpetrov
  */
 public class AstAssignStmt extends AstStmt {
-    @Override
-    public void dump(PrintWriter out, int indent) {
-        indentLocation(out, indent).println("assign _ " + operator + " _");
-        lhs.dump(out, indent+2);
-        rhs.dump(out, indent+2);
-    }
-
     public enum AssignmentOperator {
         ASSIGN,
         ASSIGN_WEAK
@@ -39,6 +34,11 @@ public class AstAssignStmt extends AstStmt {
 
     public AstExpr getRhs() {
         return rhs;
+    }
+
+    @Override
+    public void accept(IAstNodeVisitor visitor) {
+        visitor.visitAssignStmt(this);
     }
 
 }

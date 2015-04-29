@@ -1,5 +1,7 @@
 package net.alaarc.ast.nodes;
 
+import net.alaarc.ast.IAstNodeVisitor;
+
 import java.io.PrintWriter;
 
 /**
@@ -18,8 +20,7 @@ public class AstThreadStmt extends AstStmt {
     }
 
     @Override
-    public void dump(PrintWriter out, int indent) {
-        indentLocation(out, indent).println("thread");
-        body.dump(out, indent+2);
+    public void accept(IAstNodeVisitor visitor) {
+        visitor.visitThreadStmt(this);
     }
 }

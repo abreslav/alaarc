@@ -1,6 +1,7 @@
 package net.alaarc.vm;
 
 import net.alaarc.vm.instructions.*;
+import net.alaarc.vm.values.VmNull;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -71,11 +72,13 @@ public class VmThreadInterpreter implements Runnable {
 
         @Override
         public void visitLoadGlobal(LoadGlobal instr) {
+            // ( --> [var] )
             push(instr.getGlobalVar().retainValue());
         }
 
         @Override
         public void visitLoadSlot(LoadSlot instr) {
+            // ( x --> [x.slot] )
             IVmValue x = pop();
             IVmValue slotValue = x.retainSlot(instr.getSlotName());
             push(slotValue);
@@ -84,22 +87,25 @@ public class VmThreadInterpreter implements Runnable {
 
         @Override
         public void visitStoreGlobal(StoreGlobal instr) {
-            IVmValue x = pop();
-            IVmValue oldValue = instr.getGlobalVar().getAndSetValue(x);
+            // ( nv --> | {var = nv} )
+            IVmValue newValue = pop();
+            IVmValue oldValue = instr.getGlobalVar().getAndSetValue(newValue);
             oldValue.release();
         }
 
         @Override
         public void visitStoreSlot(StoreSlot instr) {
+            // ( nv x --> | {x.slot = nv } )
+            IVmValue newValue = pop();
             IVmValue x = pop();
-            IVmValue y = pop();
-            IVmValue oldValue = y.setSlot(instr.getSlotName(), x);
-            y.release();
+            IVmValue oldValue = x.setSlot(instr.getSlotName(), newValue);
+            x.release();
             oldValue.release();
         }
 
         @Override
         public void visitStoreWeakGlobal(StoreWeakGlobal instr) {
+            // ( x --> | {var ~= x} )
             IVmValue x = pop();
             IVmValue oldValue = instr.getGlobalVar().getAndSetValue(x.weak());
             x.release();
@@ -108,6 +114,7 @@ public class VmThreadInterpreter implements Runnable {
 
         @Override
         public void visitStoreWeakSlot(StoreWeakSlot instr) {
+            // ( x y --> | {y.slot ~= x} )
             IVmValue x = pop();
             IVmValue y = pop();
             IVmValue oldValue = y.setSlot(instr.getSlotName(), x.weak());
@@ -118,6 +125,7 @@ public class VmThreadInterpreter implements Runnable {
 
         @Override
         public void visitSleep(Sleep instr) {
+            // ( | {sleep} )
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {
@@ -127,6 +135,7 @@ public class VmThreadInterpreter implements Runnable {
 
         @Override
         public void visitSleepRand(SleepRand instr) {
+            // ( | {sleepr} )
             try {
                 Thread.sleep(random.nextInt(90) + 10);
             } catch (InterruptedException e) {
@@ -136,6 +145,7 @@ public class VmThreadInterpreter implements Runnable {
 
         @Override
         public void visitDump(Dump instr) {
+            // ( x --> | {dump x} )
             IVmValue x = pop();
             getVmEventsListener().onObjectDump(x.dump());
             x.release();
@@ -143,33 +153,39 @@ public class VmThreadInterpreter implements Runnable {
 
         @Override
         public void visitRunThread(RunThread instr) {
+            // ( --> | {thread {...} } )
             VmThreadInterpreter child = new VmThreadInterpreter(vmContext, instr.getThreadDef());
             new Thread(child).start();
         }
 
         @Override
         public void visitNewObject(NewObject instr) {
+            // ( --> [object] )
             IVmValue x = getObjectFactory().createObject();
             push(x.retain());
         }
 
         @Override
         public void visitRetainGlobal(RetainGlobal instr) {
+            // ( --> | {var.retainVar()} )
             instr.getGlobalVar().retainVar();
         }
 
         @Override
         public void visitReleaseGlobal(ReleaseGlobal instr) {
+            // ( --> | {var.releaseVar()} )
             instr.getGlobalVar().releaseVar();
         }
 
         @Override
         public void visitPostMessage(PostMessage instr) {
+            // ( --> | {log message} )
             getVmEventsListener().onPostMessage(instr.getMessage());
         }
 
         @Override
         public void visitAssertRc(AssertRc instr) {
+            // ( x --> | {assertion on refCount(x)} )
             IVmValue x = pop();
             long refCount = x.getRefCount();
             long num = instr.getNumber();
@@ -182,10 +198,12 @@ public class VmThreadInterpreter implements Runnable {
             x.release();
         }
 
-
+        @Override
+        public void visitPushNull(PushNull instr) {
+            // ( --> [null] )
+            push(VmNull.NULL);
+        }
     }
-
-
 
     private void handleInterrupt() {
         // does nothing

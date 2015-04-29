@@ -1,5 +1,7 @@
 package net.alaarc.ast.nodes;
 
+import net.alaarc.ast.IAstNodeVisitor;
+
 import java.io.PrintWriter;
 
 /**
@@ -11,7 +13,8 @@ public class AstSleepRandStmt extends AstStmt {
     }
 
     @Override
-    public void dump(PrintWriter out, int indent) {
-        indentLocation(out, indent).println("sleepr");
+    public void accept(IAstNodeVisitor visitor) {
+        visitor.visitSleepRandStmt(this);
     }
+
 }
