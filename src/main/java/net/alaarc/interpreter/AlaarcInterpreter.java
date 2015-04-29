@@ -38,18 +38,18 @@ public class AlaarcInterpreter {
             exec.waitUntilDone();
             int passed = exec.getAssertionsPassedCount();
             int failed = exec.getAssertionsFailedCount();
-            exec.postMessage("Run " + (i + 1) + " of " + times);
-            exec.postMessage("Assertions passed: " + passed);
-            exec.postMessage("Assertions failed: " + failed);
+            exec.postMessage("\n\tRun " + (i + 1) + " of " + times
+                    + "\n\tAssertions passed: " + passed
+                    + "\n\tAssertions failed: " + failed);
             assertionsPassed += passed;
             assertionsFailed += failed;
             vmProgram.reset();
         }
 
-        exec.postMessage("--- DONE ---");
-        exec.postMessage("Total assertions passed: " + assertionsPassed);
-        exec.postMessage("Total assertions failed: " + assertionsFailed);
         exec.finish();
+        System.out.println("--- DONE ---");
+        System.out.println("Total assertions passed: " + assertionsPassed);
+        System.out.println("Total assertions failed: " + assertionsFailed);
     }
 
     public int getAssertionsPassed() {

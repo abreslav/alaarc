@@ -39,7 +39,6 @@ public class Logger {
                 try {
                     LogMessage message = messages.take();
                     if (message.isSpoiled()) {
-                        flush();
                         break;
                     } else {
                         appendMessage(message);
@@ -62,12 +61,14 @@ public class Logger {
 
     private void appendMessage(LogMessage message) {
         writer.println("<" + message.getThreadName() + " @" + message.getTimestamp() + "> " + message.getMessage());
+        writer.flush();
     }
 
     public void finish() {
         // sends a spoiled message
         try {
             log(LogMessage.spoiled());
+            while (!messages.isEmpty());
         } catch (InterruptedException e) {
             // swallow it
         }

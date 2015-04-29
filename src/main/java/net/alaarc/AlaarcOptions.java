@@ -13,7 +13,7 @@ import java.util.Optional;
 public class AlaarcOptions {
     private Optional<String> sourceFileName = Optional.empty();
     private Optional<String> logFileName = Optional.of("stdout");
-    private Optional<String> asmFileName = Optional.of("stdout");
+    private Optional<String> asmFileName = Optional.empty();
     private int times = 1;
 
     public Optional<String> getSourceFileName() {
