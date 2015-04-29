@@ -90,7 +90,13 @@ public class VmThreadInterpreter implements Runnable {
             // ( nv --> | {var = nv} )
             IVmValue newValue = pop();
             IVmValue oldValue = instr.getGlobalVar().getAndSetValue(newValue);
-            oldValue.release();
+            release(oldValue);
+        }
+
+        private void release(IVmValue oldValue) {
+            if (oldValue != null) {
+                oldValue.release();
+            }
         }
 
         @Override
@@ -100,7 +106,7 @@ public class VmThreadInterpreter implements Runnable {
             IVmValue x = pop();
             IVmValue oldValue = x.setSlot(instr.getSlotName(), newValue);
             x.release();
-            oldValue.release();
+            release(oldValue);
         }
 
         @Override
@@ -109,7 +115,7 @@ public class VmThreadInterpreter implements Runnable {
             IVmValue x = pop();
             IVmValue oldValue = instr.getGlobalVar().getAndSetValue(x.weak());
             x.release();
-            oldValue.release();
+            release(oldValue);
         }
 
         @Override
@@ -120,7 +126,7 @@ public class VmThreadInterpreter implements Runnable {
             IVmValue oldValue = y.setSlot(instr.getSlotName(), x.weak());
             x.release();
             y.release();
-            oldValue.release();
+            release(oldValue);
         }
 
         @Override

@@ -1,0 +1,22 @@
+a = object
+a.b = object
+a.c ~= a
+x = a
+
+y = object
+yy ~= y
+y = null
+
+thread {
+  sleepr
+  a = object
+}
+
+thread {
+  sleepr
+  x = object
+}
+
+assertrc a >= 1
+assertrc x >= 1
+assertrc yy < 1
