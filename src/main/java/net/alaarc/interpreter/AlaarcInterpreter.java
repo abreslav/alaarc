@@ -4,11 +4,52 @@ import net.alaarc.AlaarcOptions;
 import net.alaarc.vm.*;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author dnpetrov
  */
 public class AlaarcInterpreter {
+    private static class RunResult {
+        private final int index;
+        private final int assertionsPassed;
+        private final int assertionsFailed;
+        private final int alaarcExceptions;
+
+        public RunResult(int index, int assertionsPassed, int assertionsFailed, int alaarcExceptions) {
+            this.index = index;
+            this.assertionsPassed = assertionsPassed;
+            this.assertionsFailed = assertionsFailed;
+            this.alaarcExceptions = alaarcExceptions;
+        }
+
+        public int getIndex() {
+            return index;
+        }
+
+        public int getAssertionsPassed() {
+            return assertionsPassed;
+        }
+
+        public int getAssertionsFailed() {
+            return assertionsFailed;
+        }
+
+        public int getAlaarcExceptions() {
+            return alaarcExceptions;
+        }
+
+        @Override
+        public String toString() {
+            return "Run " + index + ": " +
+                    "assertions passed: " + assertionsPassed + "; " +
+                    "assertions failed: " + assertionsFailed + "; " +
+                    "exceptions: " + alaarcExceptions
+                    ;
+        }
+    }
+
     private final AlaarcOptions options;
     private final VmProgram vmProgram;
     private int assertionsPassed;
@@ -34,18 +75,19 @@ public class AlaarcInterpreter {
         assertionsFailed = 0;
         alaarcExceptions = 0;
 
+        List<RunResult> runResults = new ArrayList<>();
+
         int times = options.getTimes();
         for (int i = 0; i < times; ++i) {
             vmProgramInterpreter.run();
             exec.waitUntilDone();
+
             int passed = exec.getAssertionsPassedCount();
             int failed = exec.getAssertionsFailedCount();
             int exns = exec.getVmExceptionsCount();
-            exec.postMessage("\n\tRun " + (i + 1) + " of " + times
-                    + "\n\tAssertions passed: " + passed
-                    + "\n\tAssertions failed: " + failed
-                    + "\n\tExceptions: " + exns
-            );
+
+            runResults.add(new RunResult(i, passed, failed, exns));
+
             assertionsPassed += passed;
             assertionsFailed += failed;
             alaarcExceptions += exns;
@@ -53,6 +95,9 @@ public class AlaarcInterpreter {
         }
 
         System.out.println("--- DONE ---");
+
+        runResults.forEach(System.out::println);
+
         System.out.println("Total assertions passed: " + assertionsPassed);
         System.out.println("Total assertions failed: " + assertionsFailed);
         System.out.println("Total exceptions: " + alaarcExceptions);
