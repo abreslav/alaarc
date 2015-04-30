@@ -19,11 +19,11 @@ public class NullVmEventsListener implements IVmEventsListener {
     }
 
     @Override
-    public void onThreadSpawned(int threadId) {
+    public void onThreadSpawned(String threadName) {
     }
 
     @Override
-    public void onThreadFinish(int threadId) {
+    public void onThreadFinished(String threadName) {
     }
 
     @Override

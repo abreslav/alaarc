@@ -20,11 +20,8 @@ import java.util.concurrent.locks.ReentrantLock;
 /**
  * @author dnpetrov
  */
-public class InterpreterEnvironment implements IVmEventsListener {
+public class AlaarcExecutionListener implements IVmEventsListener {
     private final AtomicInteger threadsCount = new AtomicInteger(0);
-
-    private final VmEventsLogger vmEventsLogger;
-    private final Logger logger;
 
     private final Lock executionLock = new ReentrantLock();
     private final Condition executionDone = executionLock.newCondition();
@@ -32,11 +29,14 @@ public class InterpreterEnvironment implements IVmEventsListener {
     private final AtomicInteger assertionsPassed = new AtomicInteger(0);
     private final AtomicInteger assertionsFailed = new AtomicInteger(0);
 
-    private volatile boolean finished = false;
+    private final VmEventsLogger vmEventsLogger;
+    private final Logger logger;
+
+    private volatile boolean finished;
 
     private final List<VmException> vmExceptions = new ArrayList<>();
 
-    public InterpreterEnvironment(AlaarcOptions options) throws IOException {
+    public AlaarcExecutionListener(AlaarcOptions options) throws IOException {
         logger = resolveLogger(options);
         vmEventsLogger = new VmEventsLogger(resolveLogger(options));
     }
@@ -90,17 +90,16 @@ public class InterpreterEnvironment implements IVmEventsListener {
     }
 
     @Override
-    public void onThreadSpawned(int threadId) {
-        vmEventsLogger.onThreadSpawned(threadId);
+    public void onThreadSpawned(String threadName) {
+        vmEventsLogger.onThreadSpawned(threadName);
         threadsCount.incrementAndGet();
     }
 
     @Override
-    public void onThreadFinish(int threadId) {
-        vmEventsLogger.onThreadFinish(threadId);
+    public void onThreadFinished(String threadName) {
+        vmEventsLogger.onThreadFinished(threadName);
         int numThreads = threadsCount.decrementAndGet();
         if (numThreads == 0) {
-            vmEventsLogger.finish();
             finished = true;
             executionLock.lock();
             executionDone.signalAll();
@@ -131,6 +130,7 @@ public class InterpreterEnvironment implements IVmEventsListener {
     }
 
     public void waitUntilDone() {
+        finished = false;
         executionLock.lock();
         try {
             while (true) {
@@ -138,7 +138,6 @@ public class InterpreterEnvironment implements IVmEventsListener {
                     executionDone.await();
 
                     if (finished) {
-                        logger.finish();
                         break;
                     }
                 } catch (InterruptedException e) {
@@ -156,6 +155,10 @@ public class InterpreterEnvironment implements IVmEventsListener {
 
     public int getVmExceptionsCount() {
         return vmExceptions.size();
+    }
+
+    public void finish() {
+        logger.finish();
     }
 
 }

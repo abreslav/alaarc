@@ -12,23 +12,22 @@ import java.util.Random;
  * @author dnpetrov
  */
 public class VmThreadInterpreter implements Runnable {
-    private final IVmContext vmContext;
-
+    private final VmProgramInterpreter vmContext;
     private final VmThreadDef threadDef;
+    private final String threadName;
 
     private final Random random = new Random();
 
     private final Deque<IVmValue> stack = new ArrayDeque<>(2);
 
-    public VmThreadInterpreter(IVmContext vmContext, VmThreadDef threadDef) {
+    public VmThreadInterpreter(VmProgramInterpreter vmContext, VmThreadDef threadDef, String threadName) {
         this.vmContext = Objects.requireNonNull(vmContext);
         this.threadDef = Objects.requireNonNull(threadDef);
+        this.threadName = Objects.requireNonNull(threadName);
     }
 
     @Override
     public void run() {
-        Thread.currentThread().setName("Alaarc-" + threadDef.getThreadId());
-
         // Control flow is linear, so we don't need program counter.
         for (VmInstruction instr : threadDef.getBody()) {
             try {
@@ -42,7 +41,7 @@ public class VmThreadInterpreter implements Runnable {
             }
         }
 
-        getVmEventsListener().onThreadFinish(threadDef.getThreadId());
+        getVmEventsListener().onThreadFinished(threadName);
     }
 
     private IVmEventsListener getVmEventsListener() {
@@ -158,9 +157,7 @@ public class VmThreadInterpreter implements Runnable {
         @Override
         public void visitRunThread(RunThread instr) {
             // ( --> | {thread {...} } )
-            getVmEventsListener().onThreadSpawned(instr.getThreadDef().getThreadId());
-            VmThreadInterpreter child = new VmThreadInterpreter(vmContext, instr.getThreadDef());
-            new Thread(child).start();
+            vmContext.spawnThread(instr.getThreadDef());
         }
 
         @Override
@@ -199,7 +196,6 @@ public class VmThreadInterpreter implements Runnable {
             } else {
                 getVmEventsListener().onAssertionFailed(instr);
             }
-
             x.release();
         }
 

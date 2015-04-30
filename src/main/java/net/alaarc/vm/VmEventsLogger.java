@@ -49,13 +49,13 @@ public class VmEventsLogger implements IVmEventsListener {
     }
 
     @Override
-    public void onThreadSpawned(int threadId) {
-        log("Thread spawned, threadId=" + threadId);
+    public void onThreadSpawned(String threadName) {
+        log("Thread spawned: " + threadName);
     }
 
     @Override
-    public void onThreadFinish(int threadId) {
-        log("Thread finished, threadId=" + threadId);
+    public void onThreadFinished(String threadName) {
+        log("Thread finished: " + threadName);
     }
 
     @Override

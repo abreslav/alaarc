@@ -14,7 +14,7 @@ import java.io.IOException;
 /**
  * @author dnpetrov
  */
-public class GrammarSmokeTests {
+public class TestGrammarSmoke {
 
     @Test
     public void testGrammar0() throws Exception {

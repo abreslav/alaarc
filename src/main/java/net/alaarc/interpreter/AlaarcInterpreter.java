@@ -62,14 +62,14 @@ public class AlaarcInterpreter {
     }
 
     public void run() {
-        InterpreterEnvironment exec;
+        AlaarcExecutionListener exec;
         try {
-            exec = new InterpreterEnvironment(options);
+            exec = new AlaarcExecutionListener(options);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
-        VmProgramInterpreter vmProgramInterpreter = new VmProgramInterpreter(exec, vmProgram);
+        VmProgramInterpreter vmInterpreter = new VmProgramInterpreter(exec, vmProgram);
 
         assertionsPassed = 0;
         assertionsFailed = 0;
@@ -79,7 +79,7 @@ public class AlaarcInterpreter {
 
         int times = options.getTimes();
         for (int i = 0; i < times; ++i) {
-            vmProgramInterpreter.run();
+            vmInterpreter.run();
             exec.waitUntilDone();
 
             int passed = exec.getAssertionsPassedCount();
@@ -95,6 +95,8 @@ public class AlaarcInterpreter {
             vmProgram.reset();
             exec.reset();
         }
+
+        exec.finish();
 
         System.out.println("--- DONE ---");
 

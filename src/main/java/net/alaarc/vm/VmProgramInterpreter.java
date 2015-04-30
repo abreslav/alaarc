@@ -5,7 +5,7 @@ import java.util.Objects;
 /**
  * @author dnpetrov
  */
-public class VmProgramInterpreter implements IVmContext, Runnable {
+public class VmProgramInterpreter implements Runnable {
     private final IVmEventsListener vmEventsListener;
     private final IVmObjectFactory objectFactory;
     private final VmProgram program;
@@ -20,19 +20,25 @@ public class VmProgramInterpreter implements IVmContext, Runnable {
         this(vmEventsListener, new VmObjectFactory(vmEventsListener), program);
     }
 
-    @Override
     public IVmEventsListener getVmEventsListener() {
         return vmEventsListener;
     }
 
-    @Override
     public IVmObjectFactory getObjectFactory() {
         return objectFactory;
     }
 
     @Override
     public void run() {
-        vmEventsListener.onThreadSpawned(program.getMainThread().getThreadId());
-        new Thread(new VmThreadInterpreter(this, program.getMainThread())).start();
+        spawnThread(program.getMainThread());
+    }
+
+    public void spawnThread(VmThreadDef vmThreadDef) {
+        String threadName = "Alaarc-" + vmThreadDef.getThreadId();
+        vmEventsListener.onThreadSpawned(threadName);
+        VmThreadInterpreter threadInterpreter = new VmThreadInterpreter(this, vmThreadDef, threadName);
+        Thread thread = new Thread(threadInterpreter);
+        thread.setName(threadName);
+        thread.start();
     }
 }

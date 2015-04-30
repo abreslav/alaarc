@@ -19,9 +19,9 @@ public interface IVmEventsListener {
 
     void onVmException(VmException e);
 
-    void onThreadSpawned(int threadId);
+    void onThreadSpawned(String threadName);
 
-    void onThreadFinish(int threadId);
+    void onThreadFinished(String threadName);
 
     void onObjectDump(String dump);
 

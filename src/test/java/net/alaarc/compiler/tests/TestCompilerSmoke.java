@@ -9,7 +9,7 @@ import java.io.IOException;
 /**
  * @author dnpetrov
  */
-public class CompilerSmokeTests {
+public class TestCompilerSmoke {
 
     @Test
     public void testCompile0() throws Exception {

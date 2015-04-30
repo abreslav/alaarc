@@ -61,14 +61,14 @@ class VmTestEnvironment implements IVmEventsListener {
     }
 
     @Override
-    public void onThreadSpawned(int threadId) {
-        logger.onThreadSpawned(threadId);
+    public void onThreadSpawned(String threadName) {
+        logger.onThreadSpawned(threadName);
         threadsCount.incrementAndGet();
     }
 
     @Override
-    public void onThreadFinish(int threadId) {
-        logger.onThreadFinish(threadId);
+    public void onThreadFinished(String threadName) {
+        logger.onThreadFinished(threadName);
         int numThreads = threadsCount.decrementAndGet();
         if (numThreads == 0) {
             logger.finish();
