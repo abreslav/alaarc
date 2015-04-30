@@ -29,7 +29,6 @@ public class Logger {
         this.messages = new ArrayBlockingQueue<>(queueCapacity);
         logPipeThread = new Thread(new LogPipe());
         logPipeThread.start();
-        System.err.println("Logger started");
     }
 
     public Logger(PrintWriter writer) {
