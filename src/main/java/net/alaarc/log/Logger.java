@@ -5,6 +5,9 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Simple queue-based logger. Should be ok to replace with {@link java.util.logging.Logger}.
@@ -18,8 +21,6 @@ public class Logger {
     private final PrintWriter writer;
 
     private final DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
-
-    private volatile boolean finished = false;
 
     public Logger(PrintWriter writer, int queueCapacity) {
         this.writer = writer;
@@ -40,22 +41,7 @@ public class Logger {
     }
 
     private void start() {
-        new Thread(() -> {
-            while (true) {
-                try {
-                    LogMessage message = messages.take();
-                    if (message.isSpoiled()) {
-                        finished = true;
-                        break;
-                    } else {
-                        appendMessage(message);
-                    }
-                } catch (InterruptedException e) {
-                    // Process interrupts, if any
-                    break;
-                }
-            }
-        }).start();
+        new Thread(new LogListener()).start();
     }
 
     private void flush() {
@@ -72,13 +58,43 @@ public class Logger {
         writer.flush();
     }
 
+
+    private final Lock logFinishedLock = new ReentrantLock();
+    private final Condition logFinished = logFinishedLock.newCondition();
+
+
     public void finish() {
         // sends a spoiled message
         try {
+            logFinishedLock.lock();
             log(LogMessage.spoiled());
-            while (!finished);
+            logFinished.await();
         } catch (InterruptedException e) {
             // swallow it
+        } finally {
+            logFinishedLock.unlock();
+        }
+    }
+
+    private class LogListener implements Runnable {
+        @Override
+        public void run() {
+            while (true) {
+                try {
+                    LogMessage message = messages.take();
+                    if (message.isSpoiled()) {
+                        logFinishedLock.lock();
+                        logFinished.signalAll();
+                        logFinishedLock.unlock();
+                        break;
+                    } else {
+                        Logger.this.appendMessage(message);
+                    }
+                } catch (InterruptedException e) {
+                    // Process interrupts, if any
+                    break;
+                }
+            }
         }
     }
 }

@@ -3,6 +3,7 @@ package net.alaarc.compiler;
 import net.alaarc.ast.nodes.AstStmt;
 import net.alaarc.ast.nodes.AstThreadBody;
 import net.alaarc.vm.VmGlobalVar;
+import net.alaarc.vm.VmGlobalVarDef;
 import net.alaarc.vm.VmInstruction;
 import net.alaarc.vm.VmThreadDef;
 import net.alaarc.vm.instructions.ReleaseGlobal;
@@ -21,7 +22,7 @@ public class ThreadCodeGenerator {
 
     private AstThreadBody threadBody;
     private VmThreadDef threadDef;
-    private Collection<VmGlobalVar> threadUsedVars;
+    private Collection<VmGlobalVarDef> threadUsedVars;
 
     public ThreadCodeGenerator(ProgramCodeGenerator programCodeGenerator) {
         this.programCodeGenerator = programCodeGenerator;
@@ -41,7 +42,7 @@ public class ThreadCodeGenerator {
         // To collect "last uses", we traverse our thread body in reverse order.
         // NB: In Alaarc, we have linear control flow only (so far).
 
-        Set<VmGlobalVar> releasedVars = new HashSet<>();
+        Set<VmGlobalVarDef> releasedVars = new HashSet<>();
 
         // Body blocks in reverse order.
         List<List<VmInstruction>> revBodyBlocks = new ArrayList<>();
@@ -52,7 +53,7 @@ public class ThreadCodeGenerator {
             StmtCodeGenerator stmtCodeGen = new StmtCodeGenerator(programCodeGenerator, this);
             stmtCodeGen.run(stmt);
             
-            Collection<VmGlobalVar> stmtUsedVars = stmtCodeGen.getUsedVars();
+            Collection<VmGlobalVarDef> stmtUsedVars = stmtCodeGen.getUsedVars();
             
             List<VmInstruction> releaseCode = generateReleaseVars(stmtUsedVars, releasedVars);
             revBodyBlocks.add(releaseCode);
@@ -82,7 +83,7 @@ public class ThreadCodeGenerator {
      * @param varsToRetain
      * @return code required to retain the given variables
      */
-    private List<VmInstruction> generateRetainCode(Collection<VmGlobalVar> varsToRetain) {
+    private List<VmInstruction> generateRetainCode(Collection<VmGlobalVarDef> varsToRetain) {
         return varsToRetain.stream()
                 .map(RetainGlobal::new)
                 .collect(Collectors.toList());
@@ -97,7 +98,7 @@ public class ThreadCodeGenerator {
      *      Variables released so far. Updated by this call.
      * @return code required to release the non-released variables
      */
-    private List<VmInstruction> generateReleaseVars(Collection<VmGlobalVar> usedVars, Set<VmGlobalVar> releasedVars) {
+    private List<VmInstruction> generateReleaseVars(Collection<VmGlobalVarDef> usedVars, Set<VmGlobalVarDef> releasedVars) {
         List<VmInstruction> releaseCode = new ArrayList<>();
         usedVars.stream()
                 .filter(var -> !releasedVars.contains(var))
@@ -122,7 +123,7 @@ public class ThreadCodeGenerator {
      *
      * @return variables used by a generated thread definition.
      */
-    public Collection<VmGlobalVar> getUsedVars() {
+    public Collection<VmGlobalVarDef> getUsedVars() {
         return threadUsedVars;
     }
 }

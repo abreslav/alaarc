@@ -2,6 +2,7 @@ package net.alaarc.compiler;
 
 import net.alaarc.ast.nodes.AstProgram;
 import net.alaarc.vm.VmGlobalVar;
+import net.alaarc.vm.VmGlobalVarDef;
 import net.alaarc.vm.VmProgram;
 import net.alaarc.vm.VmThreadDef;
 
@@ -14,14 +15,15 @@ import java.util.Map;
  * @author dnpetrov
  */
 public class ProgramCodeGenerator {
-    private Map<String, VmGlobalVar> globalVarsTable = new LinkedHashMap<>();
+    private int lastGlobalVarId = 0;
+    private Map<String, VmGlobalVarDef> globalVarsTable = new LinkedHashMap<>();
     private int lastThreadId = 0;
     private final List<VmThreadDef> vmThreadDefs = new ArrayList<>();
 
     private VmProgram vmProgram;
 
-    VmGlobalVar getOrCreateVar(String name) {
-        return globalVarsTable.computeIfAbsent(name, k -> new VmGlobalVar(k));
+    VmGlobalVarDef getOrCreateVar(String name) {
+        return globalVarsTable.computeIfAbsent(name, k -> new VmGlobalVarDef(lastGlobalVarId++, k));
     }
 
     int getNewThreadId() {
@@ -38,7 +40,7 @@ public class ProgramCodeGenerator {
         ThreadCodeGenerator threadCodeGenerator = new ThreadCodeGenerator(this);
         threadCodeGenerator.run(astProgram.getMainThreadBody());
 
-        List<VmGlobalVar> globalVars = new ArrayList<>(globalVarsTable.values());
+        List<VmGlobalVarDef> globalVars = new ArrayList<>(globalVarsTable.values());
         VmThreadDef mainThreadDef = threadCodeGenerator.getThreadDef();
         vmThreadDefs.add(mainThreadDef);
 

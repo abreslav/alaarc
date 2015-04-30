@@ -70,7 +70,8 @@ public class VmThreadInterpreter implements Runnable {
         @Override
         public void visitLoadGlobal(LoadGlobal instr) {
             // ( --> [var] )
-            push(instr.getGlobalVar().retainValue());
+            VmGlobalVar var = vmContext.getGlobalVar(instr.getGlobalVar().getId());
+            push(var.retainValue());
         }
 
         @Override
@@ -86,7 +87,8 @@ public class VmThreadInterpreter implements Runnable {
         public void visitStoreGlobal(StoreGlobal instr) {
             // ( nv --> | {var = nv} )
             IVmValue newValue = pop();
-            IVmValue oldValue = instr.getGlobalVar().getAndSetValue(newValue);
+            VmGlobalVar var = vmContext.getGlobalVar(instr.getGlobalVar().getId());
+            IVmValue oldValue = var.getAndSetValue(newValue);
             release(oldValue);
         }
 
@@ -110,7 +112,8 @@ public class VmThreadInterpreter implements Runnable {
         public void visitStoreWeakGlobal(StoreWeakGlobal instr) {
             // ( x --> | {var ~= x} )
             IVmValue x = pop();
-            IVmValue oldValue = instr.getGlobalVar().getAndSetValue(x.weak());
+            VmGlobalVar var = vmContext.getGlobalVar(instr.getGlobalVar().getId());
+            IVmValue oldValue = var.getAndSetValue(x.weak());
             x.release();
             release(oldValue);
         }
@@ -157,7 +160,8 @@ public class VmThreadInterpreter implements Runnable {
         @Override
         public void visitRunThread(RunThread instr) {
             // ( --> | {thread {...} } )
-            vmContext.spawnThread(instr.getThreadDef());
+            VmThreadDef threadDef = vmContext.getThreadDef(instr.getThreadId());
+            vmContext.spawnThread(threadDef);
         }
 
         @Override
@@ -170,13 +174,15 @@ public class VmThreadInterpreter implements Runnable {
         @Override
         public void visitRetainGlobal(RetainGlobal instr) {
             // ( --> | {var.retainVar()} )
-            instr.getGlobalVar().retainVar();
+            VmGlobalVar var = vmContext.getGlobalVar(instr.getGlobalVar().getId());
+            var.retainVar();
         }
 
         @Override
         public void visitReleaseGlobal(ReleaseGlobal instr) {
             // ( --> | {var.releaseVar()} )
-            instr.getGlobalVar().releaseVar();
+            VmGlobalVar var = vmContext.getGlobalVar(instr.getGlobalVar().getId());
+            var.releaseVar();
         }
 
         @Override

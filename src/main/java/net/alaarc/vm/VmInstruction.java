@@ -5,5 +5,4 @@ package net.alaarc.vm;
  */
 public abstract class VmInstruction {
     public abstract void accept(IVmInstructionVisitor v);
-
 }

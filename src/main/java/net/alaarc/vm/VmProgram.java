@@ -1,7 +1,6 @@
 package net.alaarc.vm;
 
 import java.io.OutputStream;
-import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.List;
 import java.util.Objects;
@@ -14,12 +13,12 @@ import java.util.Objects;
  * @author dnpetrov
  */
 public class VmProgram {
-    private final List<VmGlobalVar> globalVars;
+    private final List<VmGlobalVarDef> globalVarDefs;
     private final VmThreadDef mainThread;
     private final List<VmThreadDef> vmThreadDefs;
 
-    public VmProgram(List<VmGlobalVar> globalVars, VmThreadDef mainThread, List<VmThreadDef> vmThreadDefs) {
-        this.globalVars = Objects.requireNonNull(globalVars);
+    public VmProgram(List<VmGlobalVarDef> globalVarDefs, VmThreadDef mainThread, List<VmThreadDef> vmThreadDefs) {
+        this.globalVarDefs = Objects.requireNonNull(globalVarDefs);
         this.mainThread = Objects.requireNonNull(mainThread);
         this.vmThreadDefs = Objects.requireNonNull(vmThreadDefs);
     }
@@ -28,21 +27,19 @@ public class VmProgram {
         return mainThread;
     }
 
-    public List<VmGlobalVar> getGlobalVars() {
-        return globalVars;
+    public List<VmGlobalVarDef> getGlobalVarDefs() {
+        return globalVarDefs;
     }
 
-    /**
-     * Resets any internal state of this program.
-     */
-    public void reset() {
-        for (VmGlobalVar var : globalVars) {
-            var.reset();
-        }
+    public List<VmThreadDef> getVmThreadDefs() {
+        return vmThreadDefs;
     }
 
     public void dump(PrintWriter pw) {
-        pw.println("Global variables: " + globalVars.toString());
+        pw.println("Global variables: ");
+        for (VmGlobalVarDef gv : globalVarDefs) {
+            pw.println("  " + gv);
+        }
         pw.println();
 
         for (VmThreadDef threadDef : vmThreadDefs) {

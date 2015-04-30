@@ -9,10 +9,7 @@ import net.alaarc.ast.nodes.*;
 import net.alaarc.ast.nodes.exprs.AstFieldExpr;
 import net.alaarc.ast.nodes.exprs.AstNameExpr;
 import net.alaarc.ast.nodes.stmts.*;
-import net.alaarc.vm.ComparisonOperator;
-import net.alaarc.vm.VmGlobalVar;
-import net.alaarc.vm.VmInstruction;
-import net.alaarc.vm.VmThreadDef;
+import net.alaarc.vm.*;
 import net.alaarc.vm.instructions.*;
 
 import java.util.ArrayList;
@@ -28,7 +25,7 @@ public class StmtCodeGenerator {
     private final ThreadCodeGenerator threadCodeGenerator;
 
     private List<VmInstruction> stmtCode;
-    private Collection<VmGlobalVar> usedVars;
+    private Collection<VmGlobalVarDef> usedVars;
     private boolean retainCodeRequired;
 
     private final IAstNodeVisitor stmtVisitor = new StmtCodeGenVisitor();
@@ -54,7 +51,7 @@ public class StmtCodeGenerator {
         return stmtCode;
     }
 
-    public Collection<VmGlobalVar> getUsedVars() {
+    public Collection<VmGlobalVarDef> getUsedVars() {
         return usedVars;
     }
 
@@ -120,7 +117,7 @@ public class StmtCodeGenerator {
             ThreadCodeGenerator threadCodeGen = new ThreadCodeGenerator(programCodeGenerator);
             threadCodeGen.run(stmt.getBody());
             VmThreadDef threadDef = threadCodeGen.getThreadDef();
-            emit(new RunThread(threadDef));
+            emit(new RunThread(threadDef.getThreadId()));
             usedVars.addAll(threadCodeGen.getUsedVars());
             programCodeGenerator.addChildThreadDef(threadDef);
         }
@@ -133,7 +130,7 @@ public class StmtCodeGenerator {
 
         @Override
         public void visitNameExpr(AstNameExpr expr) {
-            VmGlobalVar var = programCodeGenerator.getOrCreateVar(expr.getName());
+            VmGlobalVarDef var = programCodeGenerator.getOrCreateVar(expr.getName());
             usedVars.add(var);
             emit(new LoadGlobal(var));
         }
@@ -151,7 +148,7 @@ public class StmtCodeGenerator {
         private void emitStoreCode(AstExpr lhs, AstAssignmentOperator assignmentOperator) {
             if (lhs instanceof AstNameExpr) {
                 AstNameExpr nameExpr = (AstNameExpr) lhs;
-                VmGlobalVar var = programCodeGenerator.getOrCreateVar(nameExpr.getName());
+                VmGlobalVarDef var = programCodeGenerator.getOrCreateVar(nameExpr.getName());
                 emitStoreGlobal(var, assignmentOperator);
             } else if (lhs instanceof AstFieldExpr) {
                 AstFieldExpr fieldExpr = (AstFieldExpr) lhs;
@@ -174,7 +171,7 @@ public class StmtCodeGenerator {
             }
         }
 
-        private void emitStoreGlobal(VmGlobalVar var, AstAssignmentOperator assignmentOperator) {
+        private void emitStoreGlobal(VmGlobalVarDef var, AstAssignmentOperator assignmentOperator) {
             usedVars.add(var);
 
             if (assignmentOperator == AstAssignmentOperator.ASSIGN) {

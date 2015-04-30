@@ -69,8 +69,6 @@ public class AlaarcInterpreter {
             throw new RuntimeException(e);
         }
 
-        VmProgramInterpreter vmInterpreter = new VmProgramInterpreter(exec, vmProgram);
-
         assertionsPassed = 0;
         assertionsFailed = 0;
         alaarcExceptions = 0;
@@ -79,6 +77,7 @@ public class AlaarcInterpreter {
 
         int times = options.getTimes();
         for (int i = 0; i < times; ++i) {
+            VmProgramInterpreter vmInterpreter = new VmProgramInterpreter(exec, vmProgram);
             vmInterpreter.run();
             exec.waitUntilDone();
 
@@ -92,7 +91,6 @@ public class AlaarcInterpreter {
             assertionsFailed += failed;
             alaarcExceptions += exns;
 
-            vmProgram.reset();
             exec.reset();
         }
 

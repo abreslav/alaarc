@@ -12,14 +12,14 @@ import java.util.Objects;
  * @author dnpetrov
  */
 public class RunThread extends VmInstruction {
-    private final VmThreadDef threadDef;
+    private final int threadId;
 
-    public RunThread(VmThreadDef threadDef) {
-        this.threadDef = Objects.requireNonNull(threadDef);
+    public RunThread(int threadId) {
+        this.threadId = threadId;
     }
 
-    public VmThreadDef getThreadDef() {
-        return threadDef;
+    public int getThreadId() {
+        return threadId;
     }
 
     @Override
@@ -29,6 +29,6 @@ public class RunThread extends VmInstruction {
 
     @Override
     public String toString() {
-        return "runThread " + threadDef.getThreadId();
+        return "runThread " + threadId;
     }
 }
