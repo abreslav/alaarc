@@ -22,12 +22,22 @@ public class VmEventsLogger implements IVmEventsListener {
         try {
             logger.log(LogMessage.create(message));
         } catch (InterruptedException e) {
-            // swallow it :(
+            // swallow it
         }
     }
 
     public void finish() {
         logger.finish();
+    }
+
+    @Override
+    public void onProgramStarted() {
+        log("Program started");
+    }
+
+    @Override
+    public void onProgramFinished() {
+        log("Program finished");
     }
 
     @Override

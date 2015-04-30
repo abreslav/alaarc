@@ -7,6 +7,14 @@ import net.alaarc.vm.instructions.AssertRc;
  */
 public class NullVmEventsListener implements IVmEventsListener {
     @Override
+    public void onProgramStarted() {
+    }
+
+    @Override
+    public void onProgramFinished() {
+    }
+
+    @Override
     public void onObjectDisposed(long objectId) {
     }
 

@@ -2,20 +2,23 @@ package net.alaarc.vm;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author dnpetrov
  */
 public class VmProgramInterpreter implements Runnable {
-    private final IVmEventsListener vmEventsListener;
+    private final IVmEventsListener listener;
     private final IVmObjectFactory objectFactory;
     private final VmProgram program;
 
     private final VmThreadDef[] vmThreadDefs;
     private final VmGlobalVar[] globalVars;
 
-    public VmProgramInterpreter(IVmEventsListener vmEventsListener, IVmObjectFactory objectFactory, VmProgram program) {
-        this.vmEventsListener = Objects.requireNonNull(vmEventsListener);
+    private final AtomicInteger threadsCount = new AtomicInteger(0);
+
+    public VmProgramInterpreter(IVmEventsListener listener, IVmObjectFactory objectFactory, VmProgram program) {
+        this.listener = Objects.requireNonNull(listener);
         this.objectFactory = Objects.requireNonNull(objectFactory);
         this.program = Objects.requireNonNull(program);
 
@@ -49,29 +52,52 @@ public class VmProgramInterpreter implements Runnable {
         return vmThreadDefs[id];
     }
 
-    public VmProgramInterpreter(IVmEventsListener vmEventsListener, VmProgram program) {
-        this(vmEventsListener, new VmObjectFactory(vmEventsListener), program);
+    public VmProgramInterpreter(IVmEventsListener listener, VmProgram program) {
+        this(listener, new VmObjectFactory(listener), program);
     }
 
-    public IVmEventsListener getVmEventsListener() {
-        return vmEventsListener;
+    public IVmEventsListener getListener() {
+        return listener;
     }
 
     public IVmObjectFactory getObjectFactory() {
         return objectFactory;
     }
 
+    private final Object executionFinished = new Object();
+
     @Override
     public void run() {
-        spawnThread(program.getMainThread());
+        listener.onProgramStarted();
+        synchronized (executionFinished) {
+            spawnThread(program.getMainThread());
+            try {
+                executionFinished.wait();
+            } catch (InterruptedException e) {
+                // swallow it
+            }
+        }
+
     }
 
     public void spawnThread(VmThreadDef vmThreadDef) {
         String threadName = "Alaarc-" + vmThreadDef.getThreadId();
-        vmEventsListener.onThreadSpawned(threadName);
+        threadsCount.incrementAndGet();
+        listener.onThreadSpawned(threadName);
         VmThreadInterpreter threadInterpreter = new VmThreadInterpreter(this, vmThreadDef, threadName);
         Thread thread = new Thread(threadInterpreter);
         thread.setName(threadName);
         thread.start();
+    }
+
+    public void threadFinished(String threadName) {
+        listener.onThreadFinished(threadName);
+        int numThreads = threadsCount.decrementAndGet();
+        if (numThreads == 0) {
+            listener.onProgramFinished();
+            synchronized (executionFinished) {
+                executionFinished.notify();
+            }
+        }
     }
 }

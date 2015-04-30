@@ -13,32 +13,22 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * @author dnpetrov
  */
 public class AlaarcExecutionListener implements IVmEventsListener {
-    private final AtomicInteger threadsCount = new AtomicInteger(0);
-
-    private final Lock executionLock = new ReentrantLock();
-    private final Condition executionDone = executionLock.newCondition();
-
     private final AtomicInteger assertionsPassed = new AtomicInteger(0);
     private final AtomicInteger assertionsFailed = new AtomicInteger(0);
 
     private final VmEventsLogger vmEventsLogger;
     private final Logger logger;
 
-    private volatile boolean finished;
-
     private final List<VmException> vmExceptions = new ArrayList<>();
 
     public AlaarcExecutionListener(AlaarcOptions options) throws IOException {
         logger = resolveLogger(options);
-        vmEventsLogger = new VmEventsLogger(resolveLogger(options));
+        vmEventsLogger = new VmEventsLogger(logger);
     }
 
     private static Logger resolveLogger(AlaarcOptions options) throws IOException {
@@ -73,6 +63,16 @@ public class AlaarcExecutionListener implements IVmEventsListener {
     }
 
     @Override
+    public void onProgramStarted() {
+        vmEventsLogger.onProgramStarted();
+    }
+
+    @Override
+    public void onProgramFinished() {
+        vmEventsLogger.onProgramFinished();
+    }
+
+    @Override
     public void onObjectDisposed(long objectId) {
         vmEventsLogger.onObjectDisposed(objectId);
     }
@@ -92,19 +92,11 @@ public class AlaarcExecutionListener implements IVmEventsListener {
     @Override
     public void onThreadSpawned(String threadName) {
         vmEventsLogger.onThreadSpawned(threadName);
-        threadsCount.incrementAndGet();
     }
 
     @Override
     public void onThreadFinished(String threadName) {
         vmEventsLogger.onThreadFinished(threadName);
-        int numThreads = threadsCount.decrementAndGet();
-        if (numThreads == 0) {
-            finished = true;
-            executionLock.lock();
-            executionDone.signalAll();
-            executionLock.unlock();
-        }
     }
 
     @Override
@@ -127,26 +119,6 @@ public class AlaarcExecutionListener implements IVmEventsListener {
     public void onAssertionFailed(AssertRc instr) {
         vmEventsLogger.onAssertionFailed(instr);
         assertionsFailed.incrementAndGet();
-    }
-
-    public void waitUntilDone() {
-        finished = false;
-        executionLock.lock();
-        try {
-            while (true) {
-                try {
-                    executionDone.await();
-
-                    if (finished) {
-                        break;
-                    }
-                } catch (InterruptedException e) {
-                    // TODO
-                }
-            }
-        } finally {
-            executionLock.unlock();
-        }
     }
 
     public List<VmException> getVmExceptions() {

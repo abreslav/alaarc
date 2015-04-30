@@ -29,23 +29,26 @@ public class VmThreadInterpreter implements Runnable {
     @Override
     public void run() {
         // Control flow is linear, so we don't need program counter.
-        for (VmInstruction instr : threadDef.getBody()) {
-            try {
-                instr.accept(instructionInterpreter);
-            } catch (VmException e) {
-                getVmEventsListener().onVmException(e);
-                break;
-            } catch (Exception e) {
-                getVmEventsListener().onJavaException(e);
-                break;
+        try {
+            for (VmInstruction instr : threadDef.getBody()) {
+                try {
+                    instr.accept(instructionInterpreter);
+                } catch (VmException e) {
+                    getVmEventsListener().onVmException(e);
+                    break;
+                } catch (Exception e) {
+                    getVmEventsListener().onJavaException(e);
+                    break;
+                }
             }
+        } finally{
+            vmContext.threadFinished(threadName);
         }
 
-        getVmEventsListener().onThreadFinished(threadName);
     }
 
     private IVmEventsListener getVmEventsListener() {
-        return vmContext.getVmEventsListener();
+        return vmContext.getListener();
     }
 
     private IVmObjectFactory getObjectFactory() {

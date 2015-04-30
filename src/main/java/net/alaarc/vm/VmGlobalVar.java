@@ -7,14 +7,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * Global variable in Alaarc program.
- * <p>
- *     <b>NB:</b> global variables are stateful.
- *     It might be a good idea to make them stateless and provide a separate "binding" phase before execution,
- *     generating internal "global slots" in some separate "program execution context".
- *     So far, keep it simple.
- * </p>
- *
+ * Global variable in Alaarc VM.
  *
  * @author dnpetrov
  */

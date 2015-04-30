@@ -1,6 +1,8 @@
 package net.alaarc.vm;
 
 /**
+ * Definition of a global variable in Alaarc program.
+ *
  * @author dnpetrov
  */
 public class VmGlobalVarDef {

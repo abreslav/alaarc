@@ -79,7 +79,6 @@ public class AlaarcInterpreter {
         for (int i = 0; i < times; ++i) {
             VmProgramInterpreter vmInterpreter = new VmProgramInterpreter(exec, vmProgram);
             vmInterpreter.run();
-            exec.waitUntilDone();
 
             int passed = exec.getAssertionsPassedCount();
             int failed = exec.getAssertionsFailedCount();
