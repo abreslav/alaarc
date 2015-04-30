@@ -1,0 +1,13 @@
+a = object
+a.b = object
+a.b.c = object
+
+thread {            // Thread #1
+    sleepr
+    a = object
+}
+
+thread {            // Thread #2
+    sleepr
+    a.b.c = object  // This can throw an exception if Thread #1 gets ahead of Thread #2
+}

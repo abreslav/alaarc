@@ -1,0 +1,9 @@
+a = object
+a.cyc1 = a
+a.cyc2 ~= a
+x ~= a
+
+a = null
+
+assertrc a <= 0
+assertrc x >= 1
