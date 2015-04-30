@@ -1,5 +1,6 @@
 package net.alaarc.vm.instructions;
 
+import net.alaarc.ast.AstNode;
 import net.alaarc.vm.VmInstruction;
 import net.alaarc.vm.IVmInstructionVisitor;
 
@@ -13,7 +14,8 @@ import java.util.Objects;
 public class LoadSlot extends VmInstruction {
     private final String slotName;
 
-    public LoadSlot(String slotName) {
+    public LoadSlot(AstNode loc, String slotName) {
+        super(loc);
         this.slotName = Objects.requireNonNull(slotName);
     }
 
@@ -28,6 +30,6 @@ public class LoadSlot extends VmInstruction {
 
     @Override
     public String toString() {
-        return "loadSlot " + slotName;
+        return "loadSlot " + slotName + " @" + getDebugInfo();
     }
 }

@@ -1,5 +1,6 @@
 package net.alaarc.vm.instructions;
 
+import net.alaarc.ast.AstNode;
 import net.alaarc.vm.ComparisonOperator;
 import net.alaarc.vm.IVmInstructionVisitor;
 import net.alaarc.vm.VmInstruction;
@@ -12,7 +13,8 @@ public class AssertRc extends VmInstruction {
     private final ComparisonOperator comparisonOperator;
     private final long number;
 
-    public AssertRc(ComparisonOperator comparisonOperator, long number) {
+    public AssertRc(AstNode loc, ComparisonOperator comparisonOperator, long number) {
+        super(loc);
         this.comparisonOperator = comparisonOperator;
         this.number = number;
     }
@@ -32,6 +34,6 @@ public class AssertRc extends VmInstruction {
 
     @Override
     public String toString() {
-        return "assertRc " + comparisonOperator + " " + number;
+        return "assertRc " + comparisonOperator + " " + number + " @" + getDebugInfo();
     }
 }

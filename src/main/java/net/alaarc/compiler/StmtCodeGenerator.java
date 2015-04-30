@@ -1,5 +1,6 @@
 package net.alaarc.compiler;
 
+import net.alaarc.ast.AstNode;
 import net.alaarc.ast.nodes.exprs.AstNewObjectExpr;
 import net.alaarc.ast.nodes.exprs.AstNullExpr;
 import net.alaarc.ast.nodes.operators.AstAssignmentOperator;
@@ -75,7 +76,7 @@ public class StmtCodeGenerator {
         @Override
         public void visitAssertRcStmt(AstAssertRcStmt stmt) {
             stmt.getOperand().accept(this);
-            emit(new AssertRc(getComparisonOperator(stmt.getOperator()), stmt.getNumber()));
+            emit(new AssertRc(stmt, getComparisonOperator(stmt.getOperator()), stmt.getNumber()));
         }
 
         @Override
@@ -94,22 +95,22 @@ public class StmtCodeGenerator {
         @Override
         public void visitDumpStmt(AstDumpStmt stmt) {
             stmt.getOperand().accept(this);
-            emit(new Dump());
+            emit(new Dump(stmt));
         }
 
         @Override
         public void visitLogStmt(AstLogStmt stmt) {
-            emit(new PostMessage(stmt.getMessage()));
+            emit(new PostMessage(stmt, stmt.getMessage()));
         }
 
         @Override
         public void visitSleepStmt(AstSleepStmt stmt) {
-            emit(new Sleep());
+            emit(new Sleep(stmt));
         }
 
         @Override
         public void visitSleepRandStmt(AstSleepRandStmt stmt) {
-            emit(new SleepRand());
+            emit(new SleepRand(stmt));
         }
 
         @Override
@@ -117,7 +118,7 @@ public class StmtCodeGenerator {
             ThreadCodeGenerator threadCodeGen = new ThreadCodeGenerator(programCodeGenerator);
             threadCodeGen.run(stmt.getBody());
             VmThreadDef threadDef = threadCodeGen.getThreadDef();
-            emit(new RunThread(threadDef.getThreadId()));
+            emit(new RunThread(stmt, threadDef.getThreadId()));
             usedVars.addAll(threadCodeGen.getUsedVars());
             programCodeGenerator.addChildThreadDef(threadDef);
         }
@@ -125,59 +126,59 @@ public class StmtCodeGenerator {
         @Override
         public void visitFieldExpr(AstFieldExpr expr) {
             expr.getOperand().accept(this);
-            emit(new LoadSlot(expr.getFieldName()));
+            emit(new LoadSlot(expr, expr.getFieldName()));
         }
 
         @Override
         public void visitNameExpr(AstNameExpr expr) {
             VmGlobalVarDef var = programCodeGenerator.getOrCreateVar(expr.getName());
             usedVars.add(var);
-            emit(new LoadGlobal(var));
+            emit(new LoadGlobal(expr, var));
         }
 
         @Override
         public void visitNewObjectExpr(AstNewObjectExpr expr) {
-            emit(new CreateObject());
+            emit(new CreateObject(expr));
         }
 
         @Override
         public void visitNullExpr(AstNullExpr expr) {
-            emit(new PushNull());
+            emit(new PushNull(expr));
         }
 
         private void emitStoreCode(AstExpr lhs, AstAssignmentOperator assignmentOperator) {
             if (lhs instanceof AstNameExpr) {
                 AstNameExpr nameExpr = (AstNameExpr) lhs;
                 VmGlobalVarDef var = programCodeGenerator.getOrCreateVar(nameExpr.getName());
-                emitStoreGlobal(var, assignmentOperator);
+                emitStoreGlobal(lhs, var, assignmentOperator);
             } else if (lhs instanceof AstFieldExpr) {
                 AstFieldExpr fieldExpr = (AstFieldExpr) lhs;
                 // emit parent object evaluation
                 fieldExpr.getOperand().accept(this);
                 String slotName = fieldExpr.getFieldName();
-                emitStoreSlot(slotName, assignmentOperator);
+                emitStoreSlot(lhs, slotName, assignmentOperator);
             } else {
                 throw new IllegalArgumentException("Unexpected LHS expression: " + lhs);
             }
         }
 
-        private void emitStoreSlot(String slotName, AstAssignmentOperator assignmentOperator) {
+        private void emitStoreSlot(AstNode loc, String slotName, AstAssignmentOperator assignmentOperator) {
             if (assignmentOperator == AstAssignmentOperator.ASSIGN) {
-                emit(new StoreSlot(slotName));
+                emit(new StoreSlot(loc, slotName));
             } else if (assignmentOperator == AstAssignmentOperator.ASSIGN_WEAK) {
-                emit(new StoreWeakSlot(slotName));
+                emit(new StoreWeakSlot(loc, slotName));
             } else {
                 throw new IllegalArgumentException("Unexpected assignment operator: " + assignmentOperator);
             }
         }
 
-        private void emitStoreGlobal(VmGlobalVarDef var, AstAssignmentOperator assignmentOperator) {
+        private void emitStoreGlobal(AstNode loc, VmGlobalVarDef var, AstAssignmentOperator assignmentOperator) {
             usedVars.add(var);
 
             if (assignmentOperator == AstAssignmentOperator.ASSIGN) {
-                emit(new StoreGlobal(var));
+                emit(new StoreGlobal(loc, var));
             } else if (assignmentOperator == AstAssignmentOperator.ASSIGN_WEAK) {
-                emit(new StoreWeakGlobal(var));
+                emit(new StoreWeakGlobal(loc, var));
             } else {
                 throw new IllegalArgumentException("Unexpected assignment operator: " + assignmentOperator);
             }

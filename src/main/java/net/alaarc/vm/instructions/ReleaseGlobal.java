@@ -1,5 +1,6 @@
 package net.alaarc.vm.instructions;
 
+import net.alaarc.ast.AstNode;
 import net.alaarc.vm.VmGlobalVar;
 import net.alaarc.vm.VmGlobalVarDef;
 import net.alaarc.vm.VmInstruction;
@@ -15,7 +16,8 @@ import java.util.Objects;
 public class ReleaseGlobal extends VmInstruction {
     private final VmGlobalVarDef globalVar;
 
-    public ReleaseGlobal(VmGlobalVarDef globalVar) {
+    public ReleaseGlobal(AstNode loc, VmGlobalVarDef globalVar) {
+        super(loc);
         this.globalVar = Objects.requireNonNull(globalVar);
     }
 
@@ -30,6 +32,6 @@ public class ReleaseGlobal extends VmInstruction {
 
     @Override
     public String toString() {
-        return "releaseGlobal " + globalVar.getName();
+        return "releaseGlobal " + globalVar.getName() + " @" + getDebugInfo();
     }
 }

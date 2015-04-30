@@ -1,5 +1,6 @@
 package net.alaarc.vm.instructions;
 
+import net.alaarc.ast.AstNode;
 import net.alaarc.vm.VmGlobalVar;
 import net.alaarc.vm.VmGlobalVarDef;
 import net.alaarc.vm.VmInstruction;
@@ -15,7 +16,8 @@ import java.util.Objects;
 public class StoreGlobal extends VmInstruction {
     private final VmGlobalVarDef globalVar;
 
-    public StoreGlobal(VmGlobalVarDef globalVar) {
+    public StoreGlobal(AstNode loc, VmGlobalVarDef globalVar) {
+        super(loc);
         this.globalVar = Objects.requireNonNull(globalVar);
     }
 
@@ -30,6 +32,6 @@ public class StoreGlobal extends VmInstruction {
 
     @Override
     public String toString() {
-        return "storeGlobal " + globalVar.getName();
+        return "storeGlobal " + globalVar.getName() + " @" + getDebugInfo();
     }
 }

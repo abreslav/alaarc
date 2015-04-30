@@ -1,5 +1,6 @@
 package net.alaarc.compiler;
 
+import net.alaarc.ast.AstNode;
 import net.alaarc.ast.nodes.AstStmt;
 import net.alaarc.ast.nodes.AstThreadBody;
 import net.alaarc.vm.VmGlobalVar;
@@ -55,14 +56,14 @@ public class ThreadCodeGenerator {
             
             Collection<VmGlobalVarDef> stmtUsedVars = stmtCodeGen.getUsedVars();
             
-            List<VmInstruction> releaseCode = generateReleaseVars(stmtUsedVars, releasedVars);
+            List<VmInstruction> releaseCode = generateReleaseVars(stmt, stmtUsedVars, releasedVars);
             revBodyBlocks.add(releaseCode);
 
             List<VmInstruction> stmtCode = stmtCodeGen.getStmtCode();
             revBodyBlocks.add(stmtCode);
 
             if (stmtCodeGen.isRetainCodeRequired()) {
-                List<VmInstruction> retainCode = generateRetainCode(stmtUsedVars);
+                List<VmInstruction> retainCode = generateRetainCode(stmt, stmtUsedVars);
                 revBodyBlocks.add(retainCode);
             }
 
@@ -83,9 +84,9 @@ public class ThreadCodeGenerator {
      * @param varsToRetain
      * @return code required to retain the given variables
      */
-    private List<VmInstruction> generateRetainCode(Collection<VmGlobalVarDef> varsToRetain) {
+    private List<VmInstruction> generateRetainCode(AstNode loc, Collection<VmGlobalVarDef> varsToRetain) {
         return varsToRetain.stream()
-                .map(RetainGlobal::new)
+                .map(var -> new RetainGlobal(loc, var))
                 .collect(Collectors.toList());
     }
 
@@ -98,13 +99,13 @@ public class ThreadCodeGenerator {
      *      Variables released so far. Updated by this call.
      * @return code required to release the non-released variables
      */
-    private List<VmInstruction> generateReleaseVars(Collection<VmGlobalVarDef> usedVars, Set<VmGlobalVarDef> releasedVars) {
+    private List<VmInstruction> generateReleaseVars(AstNode loc, Collection<VmGlobalVarDef> usedVars, Set<VmGlobalVarDef> releasedVars) {
         List<VmInstruction> releaseCode = new ArrayList<>();
         usedVars.stream()
                 .filter(var -> !releasedVars.contains(var))
                 .forEach(var -> {
                     releasedVars.add(var);
-                    releaseCode.add(new ReleaseGlobal(var));
+                    releaseCode.add(new ReleaseGlobal(loc, var));
                 });
         return releaseCode;
     }

@@ -19,15 +19,15 @@ public class NullVmEventsListener implements IVmEventsListener {
     }
 
     @Override
-    public void onJavaException(Exception e) {
+    public void onJavaException(VmInstruction instr, Exception e) {
     }
 
     @Override
-    public void onVmException(VmException e) {
+    public void onVmException(VmInstruction instr, VmException e) {
     }
 
     @Override
-    public void onThreadSpawned(String threadName) {
+    public void onThreadSpawned(VmInstruction instr, String threadName) {
     }
 
     @Override
@@ -35,11 +35,11 @@ public class NullVmEventsListener implements IVmEventsListener {
     }
 
     @Override
-    public void onObjectDump(String dump) {
+    public void onObjectDump(VmInstruction instr, String dump) {
     }
 
     @Override
-    public void onPostMessage(String message) {
+    public void onPostMessage(VmInstruction instr, String message) {
     }
 
     @Override

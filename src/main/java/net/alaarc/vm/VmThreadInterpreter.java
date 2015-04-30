@@ -34,10 +34,10 @@ public class VmThreadInterpreter implements Runnable {
                 try {
                     instr.accept(instructionInterpreter);
                 } catch (VmException e) {
-                    getVmEventsListener().onVmException(e);
+                    getListener().onVmException(instr, e);
                     break;
                 } catch (Exception e) {
-                    getVmEventsListener().onJavaException(e);
+                    getListener().onJavaException(instr, e);
                     break;
                 }
             }
@@ -47,7 +47,7 @@ public class VmThreadInterpreter implements Runnable {
 
     }
 
-    private IVmEventsListener getVmEventsListener() {
+    private IVmEventsListener getListener() {
         return vmContext.getListener();
     }
 
@@ -156,7 +156,7 @@ public class VmThreadInterpreter implements Runnable {
         public void visitDump(Dump instr) {
             // ( x --> | {dump x} )
             IVmValue x = pop();
-            getVmEventsListener().onObjectDump(x.dump());
+            getListener().onObjectDump(instr, x.dump());
             x.release();
         }
 
@@ -164,7 +164,7 @@ public class VmThreadInterpreter implements Runnable {
         public void visitRunThread(RunThread instr) {
             // ( --> | {thread {...} } )
             VmThreadDef threadDef = vmContext.getThreadDef(instr.getThreadId());
-            vmContext.spawnThread(threadDef);
+            vmContext.spawnThread(instr, threadDef);
         }
 
         @Override
@@ -191,7 +191,7 @@ public class VmThreadInterpreter implements Runnable {
         @Override
         public void visitPostMessage(PostMessage instr) {
             // ( --> | {log message} )
-            getVmEventsListener().onPostMessage(instr.getMessage());
+            getListener().onPostMessage(instr, instr.getMessage());
         }
 
         @Override
@@ -201,9 +201,9 @@ public class VmThreadInterpreter implements Runnable {
             long refCount = x.getRefCount();
             long num = instr.getNumber();
             if (instr.getComparisonOperator().compare(refCount, num)) {
-                getVmEventsListener().onAssertionPassed(instr);
+                getListener().onAssertionPassed(instr);
             } else {
-                getVmEventsListener().onAssertionFailed(instr);
+                getListener().onAssertionFailed(instr);
             }
             x.release();
         }

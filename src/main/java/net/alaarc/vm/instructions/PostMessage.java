@@ -1,5 +1,6 @@
 package net.alaarc.vm.instructions;
 
+import net.alaarc.ast.AstNode;
 import net.alaarc.vm.IVmInstructionVisitor;
 import net.alaarc.vm.VmInstruction;
 
@@ -11,7 +12,8 @@ import net.alaarc.vm.VmInstruction;
 public class PostMessage extends VmInstruction {
     private final String message;
 
-    public PostMessage(String message) {
+    public PostMessage(AstNode loc, String message) {
+        super(loc);
         this.message = message;
     }
 
@@ -26,6 +28,6 @@ public class PostMessage extends VmInstruction {
 
     @Override
     public String toString() {
-        return "postMessage \"" + message + "\"";
+        return "postMessage \"" + message + "\"" + " @" + getDebugInfo();
     }
 }

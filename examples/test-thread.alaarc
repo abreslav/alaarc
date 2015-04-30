@@ -1,3 +1,17 @@
+a = object
+
 thread {
-    log "hello!"
+    thread {
+        sleepr
+        a = object
+        dump a
+    }
+    thread {
+        sleepr
+        b = object
+        dump b
+    }
 }
+
+sleepr
+dump a

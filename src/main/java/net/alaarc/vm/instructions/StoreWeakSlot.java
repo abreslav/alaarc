@@ -1,5 +1,6 @@
 package net.alaarc.vm.instructions;
 
+import net.alaarc.ast.AstNode;
 import net.alaarc.vm.VmInstruction;
 import net.alaarc.vm.IVmInstructionVisitor;
 
@@ -13,7 +14,8 @@ import java.util.Objects;
 public class StoreWeakSlot extends VmInstruction {
     private final String slotName;
 
-    public StoreWeakSlot(String slotName) {
+    public StoreWeakSlot(AstNode loc, String slotName) {
+        super(loc);
         this.slotName = Objects.requireNonNull(slotName);
     }
 
@@ -28,6 +30,6 @@ public class StoreWeakSlot extends VmInstruction {
 
     @Override
     public String toString() {
-        return "storeWeakSlot " + slotName;
+        return "storeWeakSlot " + slotName + " @" + getDebugInfo();
     }
 }

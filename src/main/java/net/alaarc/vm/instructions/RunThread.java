@@ -1,5 +1,6 @@
 package net.alaarc.vm.instructions;
 
+import net.alaarc.ast.AstNode;
 import net.alaarc.vm.VmInstruction;
 import net.alaarc.vm.IVmInstructionVisitor;
 import net.alaarc.vm.VmThreadDef;
@@ -14,7 +15,8 @@ import java.util.Objects;
 public class RunThread extends VmInstruction {
     private final int threadId;
 
-    public RunThread(int threadId) {
+    public RunThread(AstNode loc, int threadId) {
+        super(loc);
         this.threadId = threadId;
     }
 
@@ -29,6 +31,6 @@ public class RunThread extends VmInstruction {
 
     @Override
     public String toString() {
-        return "runThread " + threadId;
+        return "runThread " + threadId + " @" + getDebugInfo();
     }
 }

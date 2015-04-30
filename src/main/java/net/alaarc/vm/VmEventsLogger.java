@@ -46,21 +46,25 @@ public class VmEventsLogger implements IVmEventsListener {
     }
 
     @Override
-    public void onJavaException(Exception e) {
+    public void onJavaException(VmInstruction instr, Exception e) {
         StringWriter sw = new StringWriter();
         e.printStackTrace(new PrintWriter(sw));
-        log("Java exception: " + e.getMessage() + "\n" + sw.toString());
+        log("@" + instr.getDebugInfo() + ": Java exception: " + e.getMessage() + "\n" + sw.toString());
     }
 
     @Override
-    public void onVmException(VmException e) {
+    public void onVmException(VmInstruction instr, VmException e) {
         StringWriter sw = new StringWriter();
-        log("Alaarc exception: " + e.getMessage());
+        log("@" + instr.getDebugInfo() + ": Alaarc exception: " + e.getMessage());
     }
 
     @Override
-    public void onThreadSpawned(String threadName) {
-        log("Thread spawned: " + threadName);
+    public void onThreadSpawned(VmInstruction instr, String threadName) {
+        if (instr == null) {
+            log("Main thread spawned: " + threadName);
+        } else {
+            log("@" + instr.getDebugInfo() +": Thread spawned: " + threadName);
+        }
     }
 
     @Override
@@ -69,13 +73,13 @@ public class VmEventsLogger implements IVmEventsListener {
     }
 
     @Override
-    public void onObjectDump(String dump) {
-        log("Object dumped: " + dump);
+    public void onObjectDump(VmInstruction instr, String dump) {
+        log("@" + instr.getDebugInfo() + ": " + dump);
     }
 
     @Override
-    public void onPostMessage(String message) {
-        log(message);
+    public void onPostMessage(VmInstruction instr, String message) {
+        log("@" + instr.getDebugInfo() + ": " + message);
     }
 
     @Override

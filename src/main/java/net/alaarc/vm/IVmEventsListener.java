@@ -12,12 +12,12 @@ public interface IVmEventsListener {
     void onProgramStarted();
     void onProgramFinished();
     void onObjectDisposed(long objectId);
-    void onJavaException(Exception e);
-    void onVmException(VmException e);
-    void onThreadSpawned(String threadName);
+    void onJavaException(VmInstruction instr, Exception e);
+    void onVmException(VmInstruction instr, VmException e);
+    void onThreadSpawned(VmInstruction instr, String threadName);
     void onThreadFinished(String threadName);
-    void onObjectDump(String dump);
-    void onPostMessage(String message);
+    void onObjectDump(VmInstruction instr, String dump);
+    void onPostMessage(VmInstruction instr, String message);
     void onAssertionPassed(AssertRc instr);
     void onAssertionFailed(AssertRc instr);
 }

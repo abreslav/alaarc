@@ -70,7 +70,7 @@ public class VmProgramInterpreter implements Runnable {
     public void run() {
         listener.onProgramStarted();
         synchronized (executionFinished) {
-            spawnThread(program.getMainThread());
+            spawnThread(null, program.getMainThread());
             try {
                 executionFinished.wait();
             } catch (InterruptedException e) {
@@ -80,10 +80,10 @@ public class VmProgramInterpreter implements Runnable {
 
     }
 
-    public void spawnThread(VmThreadDef vmThreadDef) {
+    public void spawnThread(VmInstruction instr, VmThreadDef vmThreadDef) {
         String threadName = "Alaarc-" + vmThreadDef.getThreadId();
         threadsCount.incrementAndGet();
-        listener.onThreadSpawned(threadName);
+        listener.onThreadSpawned(instr, threadName);
         VmThreadInterpreter threadInterpreter = new VmThreadInterpreter(this, vmThreadDef, threadName);
         Thread thread = new Thread(threadInterpreter);
         thread.setName(threadName);

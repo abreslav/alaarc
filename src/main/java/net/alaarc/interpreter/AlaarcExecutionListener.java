@@ -6,6 +6,7 @@ import net.alaarc.log.Logger;
 import net.alaarc.vm.IVmEventsListener;
 import net.alaarc.vm.VmEventsLogger;
 import net.alaarc.vm.VmException;
+import net.alaarc.vm.VmInstruction;
 import net.alaarc.vm.instructions.AssertRc;
 
 import java.io.IOException;
@@ -78,20 +79,20 @@ public class AlaarcExecutionListener implements IVmEventsListener {
     }
 
     @Override
-    public void onJavaException(Exception e) {
-        vmEventsLogger.onJavaException(e);
+    public void onJavaException(VmInstruction instr, Exception e) {
+        vmEventsLogger.onJavaException(instr, e);
         throw new RuntimeException(e);
     }
 
     @Override
-    public void onVmException(VmException e) {
-        vmEventsLogger.onVmException(e);
+    public void onVmException(VmInstruction instr, VmException e) {
+        vmEventsLogger.onVmException(instr, e);
         vmExceptions.add(e);
     }
 
     @Override
-    public void onThreadSpawned(String threadName) {
-        vmEventsLogger.onThreadSpawned(threadName);
+    public void onThreadSpawned(VmInstruction instr, String threadName) {
+        vmEventsLogger.onThreadSpawned(instr, threadName);
     }
 
     @Override
@@ -100,13 +101,13 @@ public class AlaarcExecutionListener implements IVmEventsListener {
     }
 
     @Override
-    public void onObjectDump(String dump) {
-        vmEventsLogger.onObjectDump(dump);
+    public void onObjectDump(VmInstruction instr, String dump) {
+        vmEventsLogger.onObjectDump(instr, dump);
     }
 
     @Override
-    public void onPostMessage(String message) {
-        vmEventsLogger.onPostMessage(message);
+    public void onPostMessage(VmInstruction instr, String message) {
+        vmEventsLogger.onPostMessage(instr, message);
     }
 
     @Override

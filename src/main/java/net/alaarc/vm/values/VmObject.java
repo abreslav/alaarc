@@ -132,7 +132,7 @@ public class VmObject implements IVmValue {
                             sb.append(slotValue.toString());
                             sb.append("; ");
                         }
-                        sb.append(" }");
+                        sb.append("}");
                     }
 
                     return sb.toString();
