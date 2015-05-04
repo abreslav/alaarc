@@ -26,6 +26,7 @@ public class TestGrammarSmoke {
         try {
             parseProgram("/test-error.alaarc");
         } catch (Exception e) {
+            // This is not testing anything: if there were no exception, the test would not fail
             // That's ok, we were expecting it
         }
     }

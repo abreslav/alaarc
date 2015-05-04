@@ -3,7 +3,6 @@ package net.alaarc.compiler;
 import net.alaarc.ast.AstNode;
 import net.alaarc.ast.nodes.AstStmt;
 import net.alaarc.ast.nodes.AstThreadBody;
-import net.alaarc.vm.VmGlobalVar;
 import net.alaarc.vm.VmGlobalVarDef;
 import net.alaarc.vm.VmInstruction;
 import net.alaarc.vm.VmThreadDef;
@@ -21,7 +20,7 @@ import java.util.stream.Collectors;
 public class ThreadCodeGenerator {
     private final ProgramCodeGenerator programCodeGenerator;
 
-    private AstThreadBody threadBody;
+    private AstThreadBody threadBody; // unused
     private VmThreadDef threadDef;
     private Collection<VmGlobalVarDef> threadUsedVars;
 

@@ -49,6 +49,7 @@ public class AlaarcOptions {
     }
 
     public static OutputStream resolveOutputStream(String fileName) throws FileNotFoundException {
+        // Minor. switch would have looked better
         if (fileName.equals("stdout")) {
             return System.out;
         } else if (fileName.equals("stderr")) {

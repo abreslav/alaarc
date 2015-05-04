@@ -13,6 +13,8 @@ public class Main {
         AlaarcOptions options = parseCommandLine(args);
 
         AlaarcCompiler compiler = new AlaarcCompiler(options);
+        // Minor. Duplicate code, see below
+        // Ad hoc exception handling
         try {
             compiler.run();
         } catch (Exception e) {
@@ -22,6 +24,7 @@ public class Main {
         }
 
         VmProgram vmProgram = compiler.getVmProgram();
+        // A parse error leads to an NPE in the next line
         AlaarcInterpreter interpreter = new AlaarcInterpreter(options, vmProgram);
         try {
             interpreter.run();

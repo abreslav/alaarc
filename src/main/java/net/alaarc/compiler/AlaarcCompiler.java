@@ -31,9 +31,9 @@ public class AlaarcCompiler {
     }
 
     public void run() {
-        vmProgram = null;
+        vmProgram = null; // Minor. Single-threaded
 
-        if (!alaarcOptions.getSourceFileName().isPresent()) {
+        if (!alaarcOptions.getSourceFileName().isPresent()) { // Looks more like an error: file does not exist
             System.out.println("Nothing to compile.");
             return;
         }
@@ -43,9 +43,10 @@ public class AlaarcCompiler {
         // Testing hack: ANTLR input could be provided in constructor.
         if (antlrInput == null) {
             try {
-                antlrInput = new ANTLRInputStream(new InputStreamReader(new FileInputStream(sourceFileName)));
+                antlrInput = new ANTLRInputStream(new InputStreamReader(new FileInputStream(sourceFileName))); // What about closing this file?
             } catch (IOException e) {
-                System.out.println("Couldn't open file: " + sourceFileName);
+                // Exception handling is ad-hoc
+                System.out.println("Couldn't open file: " + sourceFileName); // Also an error
                 e.printStackTrace();
                 return;
             }
@@ -58,7 +59,7 @@ public class AlaarcCompiler {
         try {
             parsed = parser.init();
         } catch (Exception e) {
-            System.out.println("Parse failed.");
+            System.out.println("Parse failed."); // Also an error
             return;
         }
 
@@ -69,6 +70,7 @@ public class AlaarcCompiler {
         codeGen.run(astProgram);
         vmProgram = codeGen.getVmProgram();
 
+        // Questionable design: maybe separating logic of program generation from particular files etc?
         if (alaarcOptions.getAsmFileName().isPresent()) {
             String asmFileName = alaarcOptions.getAsmFileName().get();
             try {

@@ -18,11 +18,15 @@ public class VmObject implements IVmValue {
 
     private final AtomicLong refCount = new AtomicLong(0);
 
+    // always created, even when not used
     private final VmWeakRef weakRef = new VmWeakRef(this);
 
+    // Can we use a simple volatile field here? Is it better?
+    // What are memory properties of ConcurrentHashMap?
     private final AtomicReference<ConcurrentHashMap<String, IVmValue>> slots =
             new AtomicReference<>(new ConcurrentHashMap<>());
 
+    // We could avoid always creating this object as well
     private final MultiReadMultiWriteMutex rwMutex = new MultiReadMultiWriteMutex();
 
     public VmObject(IVmEventsListener vm, long objectId) {
@@ -56,7 +60,12 @@ public class VmObject implements IVmValue {
                             // Someone got ahead of us and disposed this object.
                             return;
                         }
+                        // Race condition? release() might have been called once more by this time
                         if (refCount.compareAndSet(oldRefCount, oldRefCount - 1)) {
+                            // Another race condition? retain() might have been called and caused the actual refCount to
+                            // be greater now
+
+                            // And someone could have got ahead of us here and disposed this object?
                             if (oldRefCount == 1) {
                                 dispose();
                                 vmEventsListener.onObjectDisposed(objectId);
@@ -103,8 +112,9 @@ public class VmObject implements IVmValue {
 
     @Override
     public IVmValue setSlot(String slotName, IVmValue newValue) {
-        requireAlive();
+        requireAlive(); // What is the point of this check here?
         return rwMutex.withWriteLock(
+                // Possible race with dispose()?
                 () -> slots.get().put(slotName, newValue)
         );
     }

@@ -10,9 +10,11 @@ import java.io.IOException;
  * @author dnpetrov
  */
 public class TestCompilerSmoke {
+    // Major. Tests are basically absent
 
     @Test
     public void testCompile0() throws Exception {
+        // Does not seem to test much either
         compileProgram("/test1.alaarc");
     }
 
