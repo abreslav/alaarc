@@ -161,6 +161,7 @@ public class StmtCodeGenerator {
         }
 
         private void emitStoreSlot(AstNode loc, String slotName, AstAssignmentOperator assignmentOperator) {
+            // Minor. No switch
             if (assignmentOperator == AstAssignmentOperator.ASSIGN) {
                 emit(new StoreSlot(loc, slotName));
             } else if (assignmentOperator == AstAssignmentOperator.ASSIGN_WEAK) {
@@ -173,6 +174,7 @@ public class StmtCodeGenerator {
         private void emitStoreGlobal(AstNode loc, VmGlobalVarDef var, AstAssignmentOperator assignmentOperator) {
             usedVars.add(var);
 
+            // Minor. No switch
             if (assignmentOperator == AstAssignmentOperator.ASSIGN) {
                 emit(new StoreGlobal(loc, var));
             } else if (assignmentOperator == AstAssignmentOperator.ASSIGN_WEAK) {

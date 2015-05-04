@@ -14,7 +14,7 @@ import java.util.Map;
  * @author dnpetrov
  */
 public class ProgramCodeGenerator {
-    private int lastGlobalVarId = 0;
+    private int lastGlobalVarId = 0; // this is not the last id, but rather the first unused id
     private final Map<String, VmGlobalVarDef> globalVarsTable = new LinkedHashMap<>();
     private int lastThreadId = 0;
     private final List<VmThreadDef> vmThreadDefs = new ArrayList<>();

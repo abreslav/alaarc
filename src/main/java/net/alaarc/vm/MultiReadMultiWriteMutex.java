@@ -6,10 +6,13 @@ import java.util.function.Supplier;
 /**
  * Multiple-writer multiple-reader read-write mutex.
  *
+ * What guarantees does this mutex provide?
+ *
  * @author dnpetrov
  */
 public class MultiReadMultiWriteMutex {
 
+    // Missing docs: negative values are # of read locks, positive — # of write locks
     private final AtomicInteger rwCount = new AtomicInteger(0);
 
     /**
@@ -28,13 +31,14 @@ public class MultiReadMultiWriteMutex {
      * </p>
      */
     private void acquireWriteLock() {
+        // Busy wait loop. Why?
         while (true) {
             int oldCount = rwCount.get();
             if (oldCount < 0) {
                 // spin until read locks are released
                 continue;
             }
-            if (rwCount.compareAndSet(oldCount, oldCount+1)) {
+            if (rwCount.compareAndSet(oldCount, oldCount + 1)) {
                 break;
             }
         }
@@ -75,6 +79,7 @@ public class MultiReadMultiWriteMutex {
      * </p>
      */
     public void acquireReadLock() {
+        // Another busy wait loop
         while (true) {
             int oldCount = rwCount.get();
             if (oldCount > 0) {

@@ -57,7 +57,7 @@ public class AlaarcCompiler {
         vmProgram = null;
         numErrors = 0;
 
-        if (!alaarcOptions.getSourceFileName().isPresent()) {
+        if (!alaarcOptions.getSourceFileName().isPresent()) { // Looks more like an error: file does not exist
             System.out.println("Nothing to compile.");
             return;
         }
@@ -72,6 +72,8 @@ public class AlaarcCompiler {
             AstBuilder astBuilder = new AstBuilder(sourceFileName);
             astProgram = astBuilder.buildProgram(parsed);
         } catch (Exception e) {
+            // system.err?
+            // ad hoc exception handling
             System.out.println("Parse failed: " + e.getMessage());
             return;
         }
@@ -80,6 +82,7 @@ public class AlaarcCompiler {
         codeGen.run(astProgram);
         vmProgram = codeGen.getVmProgram();
 
+        // Questionable design: maybe separating logic of program generation from particular files etc?
         if (alaarcOptions.getAsmFileName().isPresent() && vmProgram != null) {
             String asmFileName = alaarcOptions.getAsmFileName().get();
             try {
