@@ -1,0 +1,23 @@
+a = object
+dump a
+a.b = object
+dump a
+dump a.b
+b ~= a
+dump b
+
+a.b = a
+dump a
+a.b = a
+dump a
+a.b = a
+dump a
+a.b = a
+dump a
+a.b = a
+dump a
+a.b = object
+c = object
+c.a = a
+a = null
+dump c.a
