@@ -35,7 +35,7 @@ public class AlaarcExecutionListener implements IVmEventsListener {
     private static Logger resolveLogger(AlaarcOptions options) throws IOException {
         if (options.getLogFileName().isPresent()) {
             String logFileName = options.getLogFileName().get();
-            return new Logger(new PrintWriter(options.resolveOutputStream(logFileName)));
+            return new Logger(new PrintWriter(AlaarcOptions.resolveOutputStream(logFileName)));
         } else {
             return new Logger();
         }

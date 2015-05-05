@@ -58,9 +58,8 @@ public class AstDumper implements IAstNodeVisitor {
         return out;
     }
 
-    private PrintWriter node(AstNode node, String text) {
+    private void node(AstNode node, String text) {
         indent(out, indent).println(node.getSourceFileName() + ":" + node.getLineNumber() + ": " + text);
-        return out;
     }
 
     private void child(AstNode node) {

@@ -4,8 +4,6 @@ import net.alaarc.ast.IAstNodeVisitor;
 import net.alaarc.ast.nodes.AstStmt;
 import net.alaarc.ast.nodes.AstThreadBody;
 
-import java.io.PrintWriter;
-
 /**
  * @author dnpetrov
  */

@@ -23,7 +23,6 @@ import java.util.List;
  */
 public class StmtCodeGenerator {
     private final ProgramCodeGenerator programCodeGenerator;
-    private final ThreadCodeGenerator threadCodeGenerator;
 
     private List<VmInstruction> stmtCode;
     private Collection<VmGlobalVarDef> usedVars;
@@ -31,9 +30,8 @@ public class StmtCodeGenerator {
 
     private final IAstNodeVisitor stmtVisitor = new StmtCodeGenVisitor();
 
-    public StmtCodeGenerator(ProgramCodeGenerator programCodeGenerator, ThreadCodeGenerator threadCodeGenerator) {
+    public StmtCodeGenerator(ProgramCodeGenerator programCodeGenerator) {
         this.programCodeGenerator = programCodeGenerator;
-        this.threadCodeGenerator = threadCodeGenerator;
     }
 
     public void run(AstStmt stmt) {

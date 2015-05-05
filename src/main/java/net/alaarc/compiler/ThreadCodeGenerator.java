@@ -3,7 +3,6 @@ package net.alaarc.compiler;
 import net.alaarc.ast.AstNode;
 import net.alaarc.ast.nodes.AstStmt;
 import net.alaarc.ast.nodes.AstThreadBody;
-import net.alaarc.vm.VmGlobalVar;
 import net.alaarc.vm.VmGlobalVarDef;
 import net.alaarc.vm.VmInstruction;
 import net.alaarc.vm.VmThreadDef;
@@ -21,7 +20,6 @@ import java.util.stream.Collectors;
 public class ThreadCodeGenerator {
     private final ProgramCodeGenerator programCodeGenerator;
 
-    private AstThreadBody threadBody;
     private VmThreadDef threadDef;
     private Collection<VmGlobalVarDef> threadUsedVars;
 
@@ -30,7 +28,6 @@ public class ThreadCodeGenerator {
     }
 
     public void run(AstThreadBody threadBody) {
-        this.threadBody = threadBody;
         this.threadUsedVars = new LinkedHashSet<>();
 
         int newThreadId = programCodeGenerator.getNewThreadId();
@@ -51,7 +48,7 @@ public class ThreadCodeGenerator {
         List<AstStmt> reversedBody = new ArrayList<>(threadBody.getStatements());
         Collections.reverse(reversedBody);
         for (AstStmt stmt : reversedBody) {
-            StmtCodeGenerator stmtCodeGen = new StmtCodeGenerator(programCodeGenerator, this);
+            StmtCodeGenerator stmtCodeGen = new StmtCodeGenerator(programCodeGenerator);
             stmtCodeGen.run(stmt);
             
             Collection<VmGlobalVarDef> stmtUsedVars = stmtCodeGen.getUsedVars();
@@ -81,7 +78,8 @@ public class ThreadCodeGenerator {
     /**
      * Generates "retain code".
      *
-     * @param varsToRetain
+     * @param loc           Location in AST
+     * @param varsToRetain  Variables that should be retained
      * @return code required to retain the given variables
      */
     private List<VmInstruction> generateRetainCode(AstNode loc, Collection<VmGlobalVarDef> varsToRetain) {
@@ -93,10 +91,9 @@ public class ThreadCodeGenerator {
     /**
      * Generates "release code".
      *
-     * @param usedVars
-     *      Variables used in a given statement (NB: statements are traversed in reverse order).
-     * @param releasedVars
-     *      Variables released so far. Updated by this call.
+     * @param loc           Location in AST
+     * @param usedVars      Variables used in a given statement (NB: statements are traversed in reverse order).
+     * @param releasedVars  Variables released so far. Updated by this call.
      * @return code required to release the non-released variables
      */
     private List<VmInstruction> generateReleaseVars(AstNode loc, Collection<VmGlobalVarDef> usedVars, Set<VmGlobalVarDef> releasedVars) {

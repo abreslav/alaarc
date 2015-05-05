@@ -1,7 +1,6 @@
 package net.alaarc.vm.instructions;
 
 import net.alaarc.ast.AstNode;
-import net.alaarc.vm.VmGlobalVar;
 import net.alaarc.vm.VmGlobalVarDef;
 import net.alaarc.vm.VmInstruction;
 import net.alaarc.vm.IVmInstructionVisitor;

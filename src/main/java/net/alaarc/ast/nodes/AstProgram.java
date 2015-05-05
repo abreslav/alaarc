@@ -3,8 +3,6 @@ package net.alaarc.ast.nodes;
 import net.alaarc.ast.AstNode;
 import net.alaarc.ast.IAstNodeVisitor;
 
-import java.io.PrintWriter;
-
 /**
  * @author dnpetrov
  */

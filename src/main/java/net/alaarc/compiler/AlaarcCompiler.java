@@ -7,8 +7,9 @@ import net.alaarc.grammar.AlaarcParser;
 import net.alaarc.vm.VmProgram;
 import org.antlr.v4.runtime.*;
 
-import java.io.*;
-import java.util.Optional;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.OutputStream;
 
 /**
  * Top-level wrapper for compilation workflow.
@@ -103,12 +104,8 @@ public class AlaarcCompiler {
 
         @Override
         public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line, int charPositionInLine, String msg, RecognitionException e) {
-            reportSyntaxError(sourceFileName, line, msg);
+            numErrors++;
         }
-    }
-
-    private void reportSyntaxError(String s, int line, String msg) {
-        numErrors++;
     }
 
     public int getNumErrors() {

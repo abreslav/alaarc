@@ -72,6 +72,8 @@ public class Logger {
                     LogMessage message = messages.take();
                     appendMessage(message);
                 } catch (InterruptedException e) {
+                    // Inspection MismatchedQueryAndUpdateOfCollection seems to miss 'BlockingQueue#drainTo' call.
+                    //noinspection MismatchedQueryAndUpdateOfCollection
                     List<LogMessage> remainingMessages = new ArrayList<>();
                     messages.drainTo(remainingMessages);
                     remainingMessages.forEach(Logger.this::appendMessage);

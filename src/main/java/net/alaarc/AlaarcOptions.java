@@ -49,12 +49,13 @@ public class AlaarcOptions {
     }
 
     public static OutputStream resolveOutputStream(String fileName) throws FileNotFoundException {
-        if (fileName.equals("stdout")) {
-            return System.out;
-        } else if (fileName.equals("stderr")) {
-            return System.err;
-        } else {
-            return new FileOutputStream(fileName);
+        switch (fileName) {
+            case "stdout":
+                return System.out;
+            case "stderr":
+                return System.err;
+            default:
+                return new FileOutputStream(fileName);
         }
     }
 

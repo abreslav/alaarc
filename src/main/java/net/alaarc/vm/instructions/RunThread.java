@@ -3,9 +3,6 @@ package net.alaarc.vm.instructions;
 import net.alaarc.ast.AstNode;
 import net.alaarc.vm.VmInstruction;
 import net.alaarc.vm.IVmInstructionVisitor;
-import net.alaarc.vm.VmThreadDef;
-
-import java.util.Objects;
 
 /**
  * <code>( --> | stars a new thread )<code>

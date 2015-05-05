@@ -4,8 +4,6 @@ import net.alaarc.compiler.AlaarcCompiler;
 import net.alaarc.interpreter.AlaarcInterpreter;
 import net.alaarc.vm.VmProgram;
 
-import java.util.Optional;
-
 /**
  * @author dnpetrov
  */
