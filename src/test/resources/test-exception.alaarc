@@ -1,0 +1,15 @@
+a = object
+
+thread {
+    sleepr
+    x = null
+    x.a = a     // setSlot for null object - exception
+}
+
+thread {
+    sleepr
+    c = undef   // read undefined variable - fine
+    c.xxx = x   // setSlot for null object - exception
+}
+
+b = a.xxx       // getSlot for undefined slot - exception
