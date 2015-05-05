@@ -22,13 +22,6 @@ public class AlaarcInterpreter {
         this.vmProgram = Objects.requireNonNull(vmProgram);
     }
 
-    AlaarcInterpreter(int times, VmProgram vmProgram) {
-        this.options = new AlaarcOptions();
-        this.options.setTimes(times);
-
-        this.vmProgram = vmProgram;
-    }
-
     public void runWith(IInterpreterListener listener) {
         listener.onRunsStarted();
         int times = options.getTimes();

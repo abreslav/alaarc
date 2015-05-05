@@ -22,7 +22,8 @@ import java.io.OutputStream;
  */
 public class AlaarcCompiler {
     private final AlaarcOptions alaarcOptions;
-    private ANTLRInputStream antlrInput = null;
+    private final ANTLRInputStream antlrInput;
+    private final String sourceFileName;
 
     private AstProgram astProgram;
     private VmProgram vmProgram;
@@ -31,11 +32,19 @@ public class AlaarcCompiler {
     
     public AlaarcCompiler(AlaarcOptions alaarcOptions) {
         this.alaarcOptions = alaarcOptions;
+        this.sourceFileName = alaarcOptions.getSourceFileName().get();
+
+        try {
+            this.antlrInput = new ANTLRFileStream(sourceFileName);
+        } catch (IOException e) {
+            System.out.println("Couldn't open file: " + sourceFileName + ": " + e.getMessage());
+            throw new RuntimeException(e);
+        }
     }
 
-    AlaarcCompiler(String sourceFileName, ANTLRInputStream antlrInput) {
-        this.alaarcOptions = new AlaarcOptions();
-        this.alaarcOptions.setSourceFileName(sourceFileName);
+    AlaarcCompiler(AlaarcOptions alaarcOptions, ANTLRInputStream antlrInput) {
+        this.alaarcOptions = alaarcOptions;
+        this.sourceFileName = alaarcOptions.getSourceFileName().get();
         this.antlrInput = antlrInput;
     }
 
@@ -49,23 +58,10 @@ public class AlaarcCompiler {
             return;
         }
 
-        String sourceFileName = alaarcOptions.getSourceFileName().get();
-
-        // Testing hack: ANTLR input could be provided in constructor.
-        if (antlrInput == null) {
-            try {
-                antlrInput = new ANTLRFileStream(sourceFileName);
-            } catch (IOException e) {
-                System.out.println("Couldn't open file: " + sourceFileName);
-                e.printStackTrace();
-                return;
-            }
-        }
-
         AlaarcLexer lexer = new AlaarcLexer(antlrInput);
 
         AlaarcParser parser = new AlaarcParser(new CommonTokenStream(lexer));
-        parser.addErrorListener(new ParsingErrorListener(sourceFileName));
+        parser.addErrorListener(new ParsingErrorListener());
         AlaarcParser.InitContext parsed;
         try {
             parsed = parser.init();
@@ -100,12 +96,6 @@ public class AlaarcCompiler {
     }
 
     private class ParsingErrorListener extends BaseErrorListener {
-        private final String sourceFileName;
-
-        public ParsingErrorListener(String sourceFileName) {
-            this.sourceFileName = sourceFileName;
-        }
-
         @Override
         public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line, int charPositionInLine, String msg, RecognitionException e) {
             // TODO error reporting (should replace ANTLR default)

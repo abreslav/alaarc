@@ -1,5 +1,6 @@
 package net.alaarc.compiler;
 
+import net.alaarc.AlaarcOptions;
 import net.alaarc.AntlrTestUtils;
 import net.alaarc.FileTestUtils;
 import net.alaarc.ast.AstDumper;
@@ -14,7 +15,7 @@ import java.io.IOException;
  */
 public class CompilerTestUtils {
     public static AlaarcCompiler compileProgram(String path) throws IOException {
-        AlaarcCompiler compiler = new AlaarcCompiler(path, AntlrTestUtils.getResourceAsAntlrInput(path));
+        AlaarcCompiler compiler = createAlaarcCompiler(path);
         compiler.run();
 
         AstProgram astProgram = compiler.getAstProgram();
@@ -30,6 +31,12 @@ public class CompilerTestUtils {
         }
 
         return compiler;
+    }
+
+    private static AlaarcCompiler createAlaarcCompiler(String path) throws IOException {
+        AlaarcOptions options = new AlaarcOptions();
+        options.setSourceFileName(path);
+        return new AlaarcCompiler(options, AntlrTestUtils.getResourceAsAntlrInput(path));
     }
 
     public static void assertEqualsGolden(String pathToGoldenFile, AstProgram astProgram) {

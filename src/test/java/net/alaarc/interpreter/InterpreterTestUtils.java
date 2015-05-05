@@ -1,5 +1,6 @@
 package net.alaarc.interpreter;
 
+import net.alaarc.AlaarcOptions;
 import net.alaarc.compiler.AlaarcCompiler;
 import net.alaarc.compiler.CompilerTestUtils;
 import net.alaarc.vm.VmProgram;
@@ -28,7 +29,7 @@ public class InterpreterTestUtils {
     public static InterpreterTestResult runProgram(VmProgram program, int times) {
         Assert.assertNotNull("Compilation failure", program);
 
-        AlaarcInterpreter interpreter = new AlaarcInterpreter(times, program);
+        AlaarcInterpreter interpreter = createAlaarcInterpreter(program, times);
         InterpreterTestListener listener = new InterpreterTestListener();
         interpreter.runWith(listener);
 
@@ -40,5 +41,11 @@ public class InterpreterTestUtils {
         System.out.println("Total exceptions: " + listener.getTotalVmExceptions());
 
         return listener.getTestResult();
+    }
+
+    private static AlaarcInterpreter createAlaarcInterpreter(VmProgram program, int times) {
+        AlaarcOptions options = new AlaarcOptions();
+        options.setTimes(times);
+        return new AlaarcInterpreter(options, program);
     }
 }
