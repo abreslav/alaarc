@@ -1,6 +1,8 @@
 package net.alaarc.interpreter;
 
+import net.alaarc.ComposedAlaarcListener;
 import net.alaarc.IAlaarcListener;
+import net.alaarc.RunStatusesCollector;
 import net.alaarc.log.ILogMessageFormatter;
 import net.alaarc.log.LogMessage;
 import net.alaarc.log.Logger;
@@ -18,141 +20,36 @@ import java.util.concurrent.atomic.AtomicInteger;
  *
  * @author dnpetrov
  */
-public class InterpreterTestListener implements IAlaarcListener {
-    private final StringWriter traceWriter;
-    private final Logger traceLogger;
-
-    private final AtomicInteger assertionsPassed = new AtomicInteger(0);
-    private final AtomicInteger assertionsFailed = new AtomicInteger(0);
-    private final AtomicInteger vmExceptionsCount = new AtomicInteger(0);
-
-    private int totalAssertionsPassed;
-    private int totalAssertionsFailed;
-    private int totalVmExceptions;
-
-    private static ILogMessageFormatter TEST_MESSAGE_FORMATTER = LogMessage::getMessage;
+public class InterpreterTestListener extends ComposedAlaarcListener {
+    private final RunStatusesCollector runStatusesCollector = new RunStatusesCollector();
+    private final InterpreterTestTracer tracer = new InterpreterTestTracer();
 
     public InterpreterTestListener() {
-        traceWriter = new StringWriter();
-        traceLogger = new Logger(new PrintWriter(traceWriter, true), TEST_MESSAGE_FORMATTER);
-    }
-
-    private void log(String message) {
-        try {
-            traceLogger.log(LogMessage.create(message));
-        } catch (InterruptedException e) {
-            // swallow it
-        }
-    }
-
-    @Override
-    public void onHarnessStarted() {
-        totalAssertionsPassed = 0;
-        totalAssertionsFailed = 0;
-        totalVmExceptions = 0;
-    }
-
-    @Override
-    public void onProgramStarted() {
-        // do nothing
-    }
-
-    @Override
-    public void onProgramFinished() {
-        // do nothing
-    }
-
-    @Override
-    public void onObjectDisposed(long objectId) {
-        // do nothing
-    }
-
-    @Override
-    public void onJavaException(VmInstruction instr, Exception e) {
-        throw new RuntimeException(e);
-    }
-
-    @Override
-    public void onVmException(VmInstruction instr, VmException e) {
-        vmExceptionsCount.incrementAndGet();
-        log(e.getMessage());
-    }
-
-    @Override
-    public void onThreadSpawned(VmInstruction instr, String threadName) {
-        // do nothing
-    }
-
-    @Override
-    public void onThreadFinished(String threadName) {
-        // do nothing
-    }
-
-    @Override
-    public void onObjectDump(VmInstruction instr, String dump) {
-        log(instr.toString() + ": " + dump);
-    }
-
-    @Override
-    public void onPostMessage(VmInstruction instr, String message) {
-        log(instr.toString() + ": " + message);
-    }
-
-    @Override
-    public void onAssertionPassed(AssertRc instr, long actualRc) {
-        log("@" + instr.getDebugInfo() + ": assertion PASSED: "
-                + actualRc + instr.getComparisonOperator() + instr.getNumber());
-        assertionsPassed.incrementAndGet();
-    }
-
-    @Override
-    public void onAssertionFailed(AssertRc instr, long actualRc) {
-        log("@" + instr.getDebugInfo() + ": assertion FAILED: "
-                + actualRc + instr.getComparisonOperator() + instr.getNumber());
-        assertionsFailed.incrementAndGet();
-    }
-
-    @Override
-    public void onRunStarted(int i) {
-        assertionsPassed.set(0);
-        assertionsFailed.set(0);
-        vmExceptionsCount.set(0);
-    }
-
-    @Override
-    public void onRunFinished(int i) {
-        int runAssertionsPassed = assertionsPassed.get();
-        int runAssertionsFailed = assertionsFailed.get();
-        int runVmExceptions = vmExceptionsCount.get();
-
-        totalAssertionsPassed += runAssertionsPassed;
-        totalAssertionsFailed += runAssertionsFailed;
-        totalVmExceptions += runVmExceptions;
-    }
-
-    @Override
-    public void onHarnessFinished() {
-        traceLogger.finish();
+        addChildListener(runStatusesCollector);
+        addChildListener(tracer);
     }
 
     public InterpreterTestResult getTestResult() {
-        return new InterpreterTestResult(getLogContent(),
-                getTotalAssertionsPassed(), getTotalAssertionsFailed(), getTotalVmExceptions());
+        return new InterpreterTestResult(
+                tracer.getTrace(),
+                runStatusesCollector.getTotalAssertionsPassed(),
+                runStatusesCollector.getTotalAssertionsFailed(),
+                runStatusesCollector.getTotalVmExceptions());
     }
 
     public String getLogContent() {
-        return traceWriter.toString();
+        return tracer.getTrace();
     }
 
     public int getTotalAssertionsPassed() {
-        return totalAssertionsPassed;
+        return runStatusesCollector.getTotalAssertionsPassed();
     }
 
     public int getTotalAssertionsFailed() {
-        return totalAssertionsFailed;
+        return runStatusesCollector.getTotalAssertionsFailed();
     }
 
     public int getTotalVmExceptions() {
-        return totalVmExceptions;
+        return runStatusesCollector.getTotalVmExceptions();
     }
 }
