@@ -1,9 +1,7 @@
 package net.alaarc.interpreter;
 
 import net.alaarc.AlaarcOptions;
-import net.alaarc.log.LogMessage;
 import net.alaarc.log.Logger;
-import net.alaarc.vm.IVmEventsListener;
 import net.alaarc.vm.VmEventsLogger;
 import net.alaarc.vm.VmException;
 import net.alaarc.vm.VmInstruction;
@@ -18,7 +16,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * @author dnpetrov
  */
-public class AlaarcExecutionListener implements IVmEventsListener {
+public class AlaarcExecutionListener implements IInterpreterListener {
     private final AtomicInteger assertionsPassed = new AtomicInteger(0);
     private final AtomicInteger assertionsFailed = new AtomicInteger(0);
 
@@ -26,6 +24,11 @@ public class AlaarcExecutionListener implements IVmEventsListener {
     private final Logger logger;
 
     private final List<VmException> vmExceptions = new ArrayList<>();
+    private final List<RunResult> runResults = new ArrayList<>();
+
+    private int totalAssertionsPassed;
+    private int totalAssertionsFailed;
+    private int totalVmExceptions;
 
     public AlaarcExecutionListener(AlaarcOptions options) throws IOException {
         logger = resolveLogger(options);
@@ -41,18 +44,10 @@ public class AlaarcExecutionListener implements IVmEventsListener {
         }
     }
 
-    public void reset() {
+    private void reset() {
         assertionsPassed.set(0);
         assertionsFailed.set(0);
         vmExceptions.clear();
-    }
-
-    public void postMessage(String message) {
-        try {
-            logger.log(LogMessage.create(message));
-        } catch (InterruptedException e) {
-            // swallow it
-        }
     }
 
     public int getAssertionsPassedCount() {
@@ -64,7 +59,15 @@ public class AlaarcExecutionListener implements IVmEventsListener {
     }
 
     @Override
+    public void onRunsStarted() {
+        totalAssertionsPassed = 0;
+        totalAssertionsFailed = 0;
+        totalVmExceptions = 0;
+    }
+
+    @Override
     public void onProgramStarted() {
+        reset();
         vmEventsLogger.onProgramStarted();
     }
 
@@ -87,7 +90,9 @@ public class AlaarcExecutionListener implements IVmEventsListener {
     @Override
     public void onVmException(VmInstruction instr, VmException e) {
         vmEventsLogger.onVmException(instr, e);
-        vmExceptions.add(e);
+        synchronized (vmExceptions) {
+            vmExceptions.add(e);
+        }
     }
 
     @Override
@@ -130,8 +135,41 @@ public class AlaarcExecutionListener implements IVmEventsListener {
         return vmExceptions.size();
     }
 
-    public void finish() {
+    @Override
+    public void onRunFinished(int i) {
+        int runAssertionsPassed = this.assertionsPassed.get();
+        int runAssertionsFailed = this.assertionsFailed.get();
+        int runVmExceptions = vmExceptions.size();
+
+        RunResult result = new RunResult(i, runAssertionsPassed, runAssertionsFailed, runVmExceptions);
+        runResults.add(result);
+
+        totalAssertionsPassed += runAssertionsPassed;
+        totalAssertionsFailed += runAssertionsFailed;
+        totalVmExceptions += runVmExceptions;
+
+        reset();
+    }
+
+    @Override
+    public void onRunsFinished() {
         logger.finish();
     }
 
+    public List<RunResult> getRunResults() {
+        return runResults;
+    }
+
+    public int getTotalAssertionsPassed() {
+        return totalAssertionsPassed;
+    }
+
+
+    public int getTotalAssertionsFailed() {
+        return totalAssertionsFailed;
+    }
+
+    public int getTotalVmExceptions() {
+        return totalVmExceptions;
+    }
 }

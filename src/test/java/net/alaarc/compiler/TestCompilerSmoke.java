@@ -21,7 +21,4 @@ public class TestCompilerSmoke {
         Assert.assertTrue(compiler.hasErrors());
     }
 
-
-
-
 }

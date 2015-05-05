@@ -26,7 +26,11 @@ public class VmProgramInterpreter implements Runnable {
         this.vmThreadDefs = createThreadDefs(program);
     }
 
-    private VmGlobalVar[] createGlobalVars(VmProgram vmProgram) {
+    public VmProgramInterpreter(IVmEventsListener listener, VmProgram program) {
+        this(listener, new VmObjectFactory(listener), program);
+    }
+
+    private static VmGlobalVar[] createGlobalVars(VmProgram vmProgram) {
         List<VmGlobalVarDef> globalVarDefs = vmProgram.getGlobalVarDefs();
         VmGlobalVar[] vmGlobalVars = new VmGlobalVar[globalVarDefs.size()];
         for (VmGlobalVarDef gvd : globalVarDefs) {
@@ -35,7 +39,7 @@ public class VmProgramInterpreter implements Runnable {
         return vmGlobalVars;
     }
 
-    private VmThreadDef[] createThreadDefs(VmProgram program) {
+    private static VmThreadDef[] createThreadDefs(VmProgram program) {
         List<VmThreadDef> programThreadDefs = program.getVmThreadDefs();
         VmThreadDef[] threadDefs = new VmThreadDef[programThreadDefs.size()];
         for (VmThreadDef ptd : programThreadDefs) {
@@ -50,10 +54,6 @@ public class VmProgramInterpreter implements Runnable {
 
     public VmThreadDef getThreadDef(int id) {
         return vmThreadDefs[id];
-    }
-
-    public VmProgramInterpreter(IVmEventsListener listener, VmProgram program) {
-        this(listener, new VmObjectFactory(listener), program);
     }
 
     public IVmEventsListener getListener() {

@@ -5,60 +5,34 @@ import net.alaarc.vm.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
  * @author dnpetrov
  */
 public class AlaarcInterpreter {
-    private static class RunResult {
-        private final int index;
-        private final int assertionsPassed;
-        private final int assertionsFailed;
-        private final int alaarcExceptions;
-
-        public RunResult(int index, int assertionsPassed, int assertionsFailed, int alaarcExceptions) {
-            this.index = index;
-            this.assertionsPassed = assertionsPassed;
-            this.assertionsFailed = assertionsFailed;
-            this.alaarcExceptions = alaarcExceptions;
-        }
-
-        public int getIndex() {
-            return index;
-        }
-
-        public int getAssertionsPassed() {
-            return assertionsPassed;
-        }
-
-        public int getAssertionsFailed() {
-            return assertionsFailed;
-        }
-
-        public int getAlaarcExceptions() {
-            return alaarcExceptions;
-        }
-
-        @Override
-        public String toString() {
-            return "Run " + index + ": " +
-                    "assertions passed: " + assertionsPassed + "; " +
-                    "assertions failed: " + assertionsFailed + "; " +
-                    "exceptions: " + alaarcExceptions
-                    ;
-        }
-    }
-
     private final AlaarcOptions options;
     private final VmProgram vmProgram;
-    private int assertionsPassed;
-    private int assertionsFailed;
-    private int alaarcExceptions;
+
+    private int totalErrors;
 
     public AlaarcInterpreter(AlaarcOptions options, VmProgram vmProgram) {
         this.options = options;
         this.vmProgram = vmProgram;
+    }
+
+    public void runWith(IInterpreterListener listener) {
+        listener.onRunsStarted();
+        int times = options.getTimes();
+        for (int i = 0; i < times; ++i) {
+            listener.onRunStarted(i);
+            VmProgramInterpreter vmInterpreter = new VmProgramInterpreter(listener, vmProgram);
+            vmInterpreter.run();
+            listener.onRunFinished(i);
+        }
+        listener.onRunsFinished();
+
     }
 
     public void run() {
@@ -66,57 +40,33 @@ public class AlaarcInterpreter {
         try {
             exec = new AlaarcExecutionListener(options);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            System.out.println("Execution failed: " + e.getMessage());
+            return;
         }
 
-        assertionsPassed = 0;
-        assertionsFailed = 0;
-        alaarcExceptions = 0;
+        runWith(exec);
 
-        List<RunResult> runResults = new ArrayList<>();
+        reportRuns(exec);
+    }
 
-        int times = options.getTimes();
-        for (int i = 0; i < times; ++i) {
-            VmProgramInterpreter vmInterpreter = new VmProgramInterpreter(exec, vmProgram);
-            vmInterpreter.run();
-
-            int passed = exec.getAssertionsPassedCount();
-            int failed = exec.getAssertionsFailedCount();
-            int exns = exec.getVmExceptionsCount();
-
-            runResults.add(new RunResult(i, passed, failed, exns));
-
-            assertionsPassed += passed;
-            assertionsFailed += failed;
-            alaarcExceptions += exns;
-
-            exec.reset();
-        }
-
-        exec.finish();
-
+    private void reportRuns(AlaarcExecutionListener exec) {
         System.out.println("--- DONE ---");
 
+        List<RunResult> runResults = exec.getRunResults();
         runResults.forEach(System.out::println);
 
-        System.out.println("Total assertions passed: " + assertionsPassed);
-        System.out.println("Total assertions failed: " + assertionsFailed);
-        System.out.println("Total exceptions: " + alaarcExceptions);
+        System.out.println("Total assertions passed: " + exec.getTotalAssertionsPassed());
+        System.out.println("Total assertions failed: " + exec.getTotalAssertionsFailed());
+        System.out.println("Total exceptions: " + exec.getTotalVmExceptions());
+
+        totalErrors = exec.getTotalAssertionsFailed() + exec.getTotalVmExceptions();
     }
 
-    public int getAssertionsPassed() {
-        return assertionsPassed;
-    }
-
-    public int getAssertionsFailed() {
-        return assertionsFailed;
-    }
-
-    public int getAlaarcExceptions() {
-        return alaarcExceptions;
+    public int getTotalErrors() {
+        return totalErrors;
     }
 
     public boolean hasErrors() {
-        return assertionsFailed != 0 || alaarcExceptions != 0;
+        return totalErrors > 0;
     }
 }
