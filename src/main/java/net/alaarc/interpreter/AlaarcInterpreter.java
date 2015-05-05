@@ -1,11 +1,10 @@
 package net.alaarc.interpreter;
 
 import net.alaarc.AlaarcOptions;
-import net.alaarc.vm.*;
+import net.alaarc.vm.VmProgram;
+import net.alaarc.vm.VmProgramInterpreter;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 /**

@@ -19,11 +19,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class AlaarcExecutionListener implements IInterpreterListener {
     private final AtomicInteger assertionsPassed = new AtomicInteger(0);
     private final AtomicInteger assertionsFailed = new AtomicInteger(0);
+    private final AtomicInteger vmExceptionsCount = new AtomicInteger(0);
 
     private final VmEventsLogger vmEventsLogger;
     private final Logger logger;
 
-    private final List<VmException> vmExceptions = new ArrayList<>();
     private final List<RunResult> runResults = new ArrayList<>();
 
     private int totalAssertionsPassed;
@@ -47,15 +47,7 @@ public class AlaarcExecutionListener implements IInterpreterListener {
     private void reset() {
         assertionsPassed.set(0);
         assertionsFailed.set(0);
-        vmExceptions.clear();
-    }
-
-    public int getAssertionsPassedCount() {
-        return assertionsPassed.get();
-    }
-
-    public int getAssertionsFailedCount() {
-        return assertionsFailed.get();
+        vmExceptionsCount.set(0);
     }
 
     @Override
@@ -90,9 +82,7 @@ public class AlaarcExecutionListener implements IInterpreterListener {
     @Override
     public void onVmException(VmInstruction instr, VmException e) {
         vmEventsLogger.onVmException(instr, e);
-        synchronized (vmExceptions) {
-            vmExceptions.add(e);
-        }
+        vmExceptionsCount.incrementAndGet();
     }
 
     @Override
@@ -127,19 +117,11 @@ public class AlaarcExecutionListener implements IInterpreterListener {
         assertionsFailed.incrementAndGet();
     }
 
-    public List<VmException> getVmExceptions() {
-        return vmExceptions;
-    }
-
-    public int getVmExceptionsCount() {
-        return vmExceptions.size();
-    }
-
     @Override
     public void onRunFinished(int i) {
-        int runAssertionsPassed = this.assertionsPassed.get();
-        int runAssertionsFailed = this.assertionsFailed.get();
-        int runVmExceptions = vmExceptions.size();
+        int runAssertionsPassed = assertionsPassed.get();
+        int runAssertionsFailed = assertionsFailed.get();
+        int runVmExceptions = vmExceptionsCount.get();
 
         RunResult result = new RunResult(i, runAssertionsPassed, runAssertionsFailed, runVmExceptions);
         runResults.add(result);
@@ -163,7 +145,6 @@ public class AlaarcExecutionListener implements IInterpreterListener {
     public int getTotalAssertionsPassed() {
         return totalAssertionsPassed;
     }
-
 
     public int getTotalAssertionsFailed() {
         return totalAssertionsFailed;

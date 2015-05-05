@@ -104,6 +104,7 @@ public class AlaarcCompiler {
 
         @Override
         public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line, int charPositionInLine, String msg, RecognitionException e) {
+            // TODO error reporting (should replace ANTLR default)
             numErrors++;
         }
     }
