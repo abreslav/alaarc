@@ -30,6 +30,7 @@ public class TestInterpreterSmoke {
         InterpreterTestResult result = InterpreterTestUtils.runProgram("/cyclic.alaarc", 1);
         InterpreterTestUtils.assertNoProblems(result);
         Assert.assertEquals(2, result.getTotalAssertionsPassed());
+        Assert.assertEquals(1, result.getTotalLiveObjects());
     }
 
     @Test

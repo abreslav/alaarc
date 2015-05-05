@@ -7,13 +7,17 @@ import net.alaarc.vm.instructions.AssertRc;
 /**
  * @author dnpetrov
  */
-public class NullAlaarcListener implements IAlaarcListener {
+public class DefaultAlaarcListener implements IAlaarcListener {
     @Override
     public void onProgramStarted() {
     }
 
     @Override
     public void onProgramFinished() {
+    }
+
+    @Override
+    public void onObjectCreated(long objectId) {
     }
 
     @Override

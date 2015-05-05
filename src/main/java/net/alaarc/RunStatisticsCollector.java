@@ -12,15 +12,17 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * @author dnpetrov
  */
-public class RunStatusesCollector extends NullAlaarcListener {
+public class RunStatisticsCollector extends DefaultAlaarcListener {
     private final List<RunResult> runResults = new ArrayList<>();
 
     private final AtomicInteger assertionsPassed = new AtomicInteger(0);
     private final AtomicInteger assertionsFailed = new AtomicInteger(0);
+    private final AtomicInteger liveObjects = new AtomicInteger(0);
     private final AtomicInteger vmExceptionsCount = new AtomicInteger(0);
 
     private int totalAssertionsPassed;
     private int totalAssertionsFailed;
+    private int totalLiveObjects;
     private int totalVmExceptions;
 
     @Override
@@ -42,6 +44,7 @@ public class RunStatusesCollector extends NullAlaarcListener {
     public void onHarnessStarted() {
         totalAssertionsPassed = 0;
         totalAssertionsFailed = 0;
+        totalLiveObjects = 0;
         totalVmExceptions = 0;
     }
 
@@ -49,6 +52,7 @@ public class RunStatusesCollector extends NullAlaarcListener {
     public void onRunStarted(int i) {
         assertionsPassed.set(0);
         assertionsFailed.set(0);
+        liveObjects.set(0);
         vmExceptionsCount.set(0);
     }
 
@@ -56,14 +60,26 @@ public class RunStatusesCollector extends NullAlaarcListener {
     public void onRunFinished(int i) {
         int runAssertionsPassed = assertionsPassed.get();
         int runAssertionsFailed = assertionsFailed.get();
+        int runLiveObjects = liveObjects.get();
         int runVmExceptions = vmExceptionsCount.get();
 
-        RunResult result = new RunResult(i, runAssertionsPassed, runAssertionsFailed, runVmExceptions);
+        RunResult result = new RunResult(i, runAssertionsPassed, runAssertionsFailed, runLiveObjects, runVmExceptions);
         runResults.add(result);
 
         totalAssertionsPassed += runAssertionsPassed;
         totalAssertionsFailed += runAssertionsFailed;
+        totalLiveObjects += runLiveObjects;
         totalVmExceptions += runVmExceptions;
+    }
+
+    @Override
+    public void onObjectCreated(long objectId) {
+        liveObjects.incrementAndGet();
+    }
+
+    @Override
+    public void onObjectDisposed(long objectId) {
+        liveObjects.decrementAndGet();
     }
 
     public List<RunResult> getRunResults() {
@@ -76,6 +92,10 @@ public class RunStatusesCollector extends NullAlaarcListener {
 
     public int getTotalAssertionsFailed() {
         return totalAssertionsFailed;
+    }
+
+    public int getTotalLiveObjects() {
+        return totalLiveObjects;
     }
 
     public int getTotalVmExceptions() {

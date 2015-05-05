@@ -2,7 +2,7 @@ package net.alaarc.interpreter;
 
 import net.alaarc.AlaarcOptions;
 import net.alaarc.ComposedAlaarcListener;
-import net.alaarc.RunStatusesCollector;
+import net.alaarc.RunStatisticsCollector;
 import net.alaarc.log.Logger;
 import net.alaarc.vm.AlaarcLogger;
 
@@ -15,13 +15,13 @@ import java.util.List;
  */
 public class AlaarcExecutionListener extends ComposedAlaarcListener {
     private final AlaarcLogger alaarcEventsLogger;
-    private final RunStatusesCollector runStatusesCollector = new RunStatusesCollector();
+    private final RunStatisticsCollector runStatisticsCollector = new RunStatisticsCollector();
 
     public AlaarcExecutionListener(AlaarcOptions options) throws IOException {
         alaarcEventsLogger = new AlaarcLogger(resolveLogger(options));
 
         addChildListener(alaarcEventsLogger);
-        addChildListener(runStatusesCollector);
+        addChildListener(runStatisticsCollector);
     }
 
     private static Logger resolveLogger(AlaarcOptions options) throws IOException {
@@ -34,18 +34,18 @@ public class AlaarcExecutionListener extends ComposedAlaarcListener {
     }
 
     public List<RunResult> getRunResults() {
-        return runStatusesCollector.getRunResults();
+        return runStatisticsCollector.getRunResults();
     }
 
     public int getTotalAssertionsPassed() {
-        return runStatusesCollector.getTotalAssertionsPassed();
+        return runStatisticsCollector.getTotalAssertionsPassed();
     }
 
     public int getTotalAssertionsFailed() {
-        return runStatusesCollector.getTotalAssertionsFailed();
+        return runStatisticsCollector.getTotalAssertionsFailed();
     }
 
     public int getTotalVmExceptions() {
-        return runStatusesCollector.getTotalVmExceptions();
+        return runStatisticsCollector.getTotalVmExceptions();
     }
 }

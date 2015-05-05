@@ -45,6 +45,13 @@ public class ComposedAlaarcListener implements IAlaarcListener {
     }
 
     @Override
+    public void onObjectCreated(long objectId) {
+        for (IAlaarcListener listener : listeners) {
+            listener.onObjectCreated(objectId);
+        }
+    }
+
+    @Override
     public void onObjectDisposed(long objectId) {
         for (IAlaarcListener listener : listeners) {
             listener.onObjectDisposed(objectId);

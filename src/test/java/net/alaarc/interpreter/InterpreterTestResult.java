@@ -7,12 +7,15 @@ public class InterpreterTestResult {
     private final String trace;
     private final int totalAssertionsPassed;
     private final int totalAssertionsFailed;
+    private final int totalLiveObjects;
     private final int totalVmExceptions;
 
-    public InterpreterTestResult(String trace, int totalAssertionsPassed, int totalAssertionsFailed, int totalVmExceptions) {
+    public InterpreterTestResult(String trace, int totalAssertionsPassed, int totalAssertionsFailed,
+                                 int totalLiveObjects, int totalVmExceptions) {
         this.trace = trace;
         this.totalAssertionsPassed = totalAssertionsPassed;
         this.totalAssertionsFailed = totalAssertionsFailed;
+        this.totalLiveObjects = totalLiveObjects;
         this.totalVmExceptions = totalVmExceptions;
     }
 
@@ -28,7 +31,12 @@ public class InterpreterTestResult {
         return totalAssertionsFailed;
     }
 
+    public int getTotalLiveObjects() {
+        return totalLiveObjects;
+    }
+
     public int getTotalVmExceptions() {
         return totalVmExceptions;
     }
+
 }

@@ -19,6 +19,7 @@ public interface IAlaarcListener {
     void onProgramStarted();
     void onProgramFinished();
 
+    void onObjectCreated(long objectId);
     void onObjectDisposed(long objectId);
 
     void onJavaException(VmInstruction instr, Exception e);

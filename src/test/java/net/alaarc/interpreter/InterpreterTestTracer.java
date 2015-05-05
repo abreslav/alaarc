@@ -1,6 +1,6 @@
 package net.alaarc.interpreter;
 
-import net.alaarc.NullAlaarcListener;
+import net.alaarc.DefaultAlaarcListener;
 import net.alaarc.log.ILogMessageFormatter;
 import net.alaarc.log.LogMessage;
 import net.alaarc.log.Logger;
@@ -14,7 +14,7 @@ import java.io.StringWriter;
 /**
  * @author dnpetrov
  */
-public class InterpreterTestTracer extends NullAlaarcListener {
+public class InterpreterTestTracer extends DefaultAlaarcListener {
     private final StringWriter traceWriter;
     private final Logger traceLogger;
 
@@ -61,6 +61,10 @@ public class InterpreterTestTracer extends NullAlaarcListener {
                 + actualRc + instr.getComparisonOperator() + instr.getNumber());
     }
 
+    @Override
+    public void onHarnessFinished() {
+        traceLogger.finish();
+    }
 
     public String getTrace() {
         return traceWriter.toString();

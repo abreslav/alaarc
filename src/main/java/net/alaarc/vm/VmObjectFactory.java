@@ -19,6 +19,7 @@ public class VmObjectFactory implements IVmObjectFactory {
     @Override
     public IVmValue createObject() {
         long id = objectsCounter.getAndIncrement();
+        vmEventsListener.onObjectCreated(id);
         return new VmObject(vmEventsListener, id);
     }
 }

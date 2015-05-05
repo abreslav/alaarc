@@ -1,6 +1,6 @@
 package net.alaarc.vm;
 
-import net.alaarc.IAlaarcListener;
+import net.alaarc.DefaultAlaarcListener;
 import net.alaarc.log.LogMessage;
 import net.alaarc.log.Logger;
 import net.alaarc.vm.instructions.AssertRc;
@@ -12,7 +12,7 @@ import java.util.Objects;
 /**
  * @author dnpetrov
  */
-public class AlaarcLogger implements IAlaarcListener {
+public class AlaarcLogger extends DefaultAlaarcListener {
     private final Logger logger;
 
     public AlaarcLogger(Logger logger) {
@@ -80,24 +80,14 @@ public class AlaarcLogger implements IAlaarcListener {
 
     @Override
     public void onAssertionPassed(AssertRc instr, long actualRc) {
-        log("@" + instr.getDebugInfo() + ": assertion PASSED: " + actualRc + instr.getComparisonOperator() + instr.getNumber());
+        log("@" + instr.getDebugInfo() + ": assertion PASSED: "
+                + actualRc + instr.getComparisonOperator() + instr.getNumber());
     }
 
     @Override
     public void onAssertionFailed(AssertRc instr, long actualRc) {
-        log("@" + instr.getDebugInfo() + ": assertion FAILED: " + actualRc + instr.getComparisonOperator() + instr.getNumber());
-    }
-
-    @Override
-    public void onHarnessStarted() {
-    }
-
-    @Override
-    public void onRunStarted(int i) {
-    }
-
-    @Override
-    public void onRunFinished(int i) {
+        log("@" + instr.getDebugInfo() + ": assertion FAILED: "
+                + actualRc + instr.getComparisonOperator() + instr.getNumber());
     }
 
     @Override

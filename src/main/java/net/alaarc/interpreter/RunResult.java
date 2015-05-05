@@ -7,12 +7,14 @@ public class RunResult {
     private final int index;
     private final int assertionsPassed;
     private final int assertionsFailed;
+    private final int liveObjects;
     private final int alaarcExceptions;
 
-    public RunResult(int index, int assertionsPassed, int assertionsFailed, int alaarcExceptions) {
+    public RunResult(int index, int assertionsPassed, int assertionsFailed, int liveObjects, int alaarcExceptions) {
         this.index = index;
         this.assertionsPassed = assertionsPassed;
         this.assertionsFailed = assertionsFailed;
+        this.liveObjects = liveObjects;
         this.alaarcExceptions = alaarcExceptions;
     }
 
@@ -28,6 +30,10 @@ public class RunResult {
         return assertionsFailed;
     }
 
+    public int getLiveObjects() {
+        return liveObjects;
+    }
+
     public int getAlaarcExceptions() {
         return alaarcExceptions;
     }
@@ -37,6 +43,7 @@ public class RunResult {
         return "Run " + index + ": " +
                 "assertions passed: " + assertionsPassed + "; " +
                 "assertions failed: " + assertionsFailed + "; " +
+                "live objects: " + liveObjects + "; " +
                 "exceptions: " + alaarcExceptions
                 ;
     }
