@@ -11,7 +11,7 @@ import java.io.*;
 public class FileTestUtils {
 
     public static void assertContentEquals(String pathToGoldenFile, String actual) {
-        try (InputStream golden = FileTestUtils.class.getResourceAsStream(pathToGoldenFile)) {
+        try (InputStream golden = getResourceAsStream(pathToGoldenFile)) {
             BufferedReader goldenReader = new BufferedReader(new InputStreamReader(golden));
             BufferedReader actualReader = new BufferedReader(new StringReader(actual));
 
@@ -55,4 +55,7 @@ public class FileTestUtils {
         }
     }
 
+    public static InputStream getResourceAsStream(String path) throws IOException {
+        return FileTestUtils.class.getResourceAsStream(path);
+    }
 }

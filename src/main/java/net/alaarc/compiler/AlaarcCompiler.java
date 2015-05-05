@@ -9,6 +9,7 @@ import org.antlr.v4.runtime.*;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 
 /**
@@ -33,19 +34,22 @@ public class AlaarcCompiler {
     public AlaarcCompiler(AlaarcOptions alaarcOptions) {
         this.alaarcOptions = alaarcOptions;
         this.sourceFileName = alaarcOptions.getSourceFileName().get();
+        this.antlrInput = createAntlrInputStream(sourceFileName);
+    }
 
+    private ANTLRInputStream createAntlrInputStream(String sourceFileName) {
         try {
-            this.antlrInput = new ANTLRFileStream(sourceFileName);
+            return new ANTLRFileStream(sourceFileName);
         } catch (IOException e) {
             System.out.println("Couldn't open file: " + sourceFileName + ": " + e.getMessage());
             throw new RuntimeException(e);
         }
     }
 
-    AlaarcCompiler(AlaarcOptions alaarcOptions, ANTLRInputStream antlrInput) {
+    AlaarcCompiler(AlaarcOptions alaarcOptions, InputStream input) throws IOException {
         this.alaarcOptions = alaarcOptions;
         this.sourceFileName = alaarcOptions.getSourceFileName().get();
-        this.antlrInput = antlrInput;
+        this.antlrInput = new ANTLRInputStream(input);
     }
 
     public void run() {

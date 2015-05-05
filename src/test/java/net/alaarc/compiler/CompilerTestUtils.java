@@ -36,7 +36,7 @@ public class CompilerTestUtils {
     private static AlaarcCompiler createAlaarcCompiler(String path) throws IOException {
         AlaarcOptions options = new AlaarcOptions();
         options.setSourceFileName(path);
-        return new AlaarcCompiler(options, AntlrTestUtils.getResourceAsAntlrInput(path));
+        return new AlaarcCompiler(options, FileTestUtils.getResourceAsStream(path));
     }
 
     public static void assertEqualsGolden(String pathToGoldenFile, AstProgram astProgram) {
