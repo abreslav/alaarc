@@ -1,6 +1,7 @@
 package net.alaarc.interpreter;
 
 import net.alaarc.AlaarcOptions;
+import net.alaarc.IAlaarcEventsListener;
 import net.alaarc.vm.VmProgram;
 import net.alaarc.vm.VmProgramInterpreter;
 
@@ -22,8 +23,8 @@ public class AlaarcInterpreter {
         this.vmProgram = Objects.requireNonNull(vmProgram);
     }
 
-    public void runWith(IInterpreterListener listener) {
-        listener.onRunsStarted();
+    public void runWith(IAlaarcEventsListener listener) {
+        listener.onHarnessStarted();
         int times = options.getTimes();
         for (int i = 0; i < times; ++i) {
             listener.onRunStarted(i);
@@ -31,7 +32,7 @@ public class AlaarcInterpreter {
             vmInterpreter.run();
             listener.onRunFinished(i);
         }
-        listener.onRunsFinished();
+        listener.onHarnessFinished();
     }
 
     public void run() {

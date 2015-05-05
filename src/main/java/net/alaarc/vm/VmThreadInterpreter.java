@@ -1,5 +1,6 @@
 package net.alaarc.vm;
 
+import net.alaarc.IAlaarcEventsListener;
 import net.alaarc.vm.instructions.*;
 import net.alaarc.vm.values.VmNull;
 
@@ -47,7 +48,7 @@ public class VmThreadInterpreter implements Runnable {
 
     }
 
-    private IVmEventsListener getListener() {
+    private IAlaarcEventsListener getListener() {
         return vmContext.getListener();
     }
 

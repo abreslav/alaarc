@@ -1,5 +1,7 @@
-package net.alaarc.vm;
+package net.alaarc;
 
+import net.alaarc.vm.VmException;
+import net.alaarc.vm.VmInstruction;
 import net.alaarc.vm.instructions.AssertRc;
 
 /**
@@ -8,7 +10,7 @@ import net.alaarc.vm.instructions.AssertRc;
  *
  * @author dnpetrov
  */
-public interface IVmEventsListener {
+public interface IAlaarcEventsListener {
     void onProgramStarted();
     void onProgramFinished();
     void onObjectDisposed(long objectId);
@@ -20,4 +22,20 @@ public interface IVmEventsListener {
     void onPostMessage(VmInstruction instr, String message);
     void onAssertionPassed(AssertRc instr, long actualRc);
     void onAssertionFailed(AssertRc instr, long actualRc);
+
+    default void onRunStarted(int i) {
+        // do nothing
+    }
+
+    default void onRunFinished(int i) {
+        // do nothing
+    }
+
+    default void onHarnessStarted() {
+        // do nothing
+    }
+
+    default void onHarnessFinished() {
+        // do nothing
+    }
 }

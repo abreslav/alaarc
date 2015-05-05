@@ -1,9 +1,10 @@
 package net.alaarc.interpreter;
 
+import net.alaarc.IAlaarcEventsListener;
 import net.alaarc.log.ILogMessageFormatter;
 import net.alaarc.log.LogMessage;
 import net.alaarc.log.Logger;
-import net.alaarc.vm.NullVmEventsListener;
+import net.alaarc.vm.AlaarcEventsLogger;
 import net.alaarc.vm.VmException;
 import net.alaarc.vm.VmInstruction;
 import net.alaarc.vm.instructions.AssertRc;
@@ -13,11 +14,11 @@ import java.io.StringWriter;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * TODO code duplication with {@link AlaarcExecutionListener} & {@link net.alaarc.vm.VmEventsLogger}, refactor.
+ * TODO code duplication with {@link AlaarcExecutionListener} & {@link AlaarcEventsLogger}, refactor.
  *
  * @author dnpetrov
  */
-public class InterpreterTestListener extends NullVmEventsListener implements IInterpreterListener {
+public class InterpreterTestListener implements IAlaarcEventsListener {
     private final StringWriter traceWriter;
     private final Logger traceLogger;
 
@@ -45,10 +46,25 @@ public class InterpreterTestListener extends NullVmEventsListener implements IIn
     }
 
     @Override
-    public void onRunsStarted() {
+    public void onHarnessStarted() {
         totalAssertionsPassed = 0;
         totalAssertionsFailed = 0;
         totalVmExceptions = 0;
+    }
+
+    @Override
+    public void onProgramStarted() {
+        // do nothing
+    }
+
+    @Override
+    public void onProgramFinished() {
+        // do nothing
+    }
+
+    @Override
+    public void onObjectDisposed(long objectId) {
+        // do nothing
     }
 
     @Override
@@ -60,6 +76,16 @@ public class InterpreterTestListener extends NullVmEventsListener implements IIn
     public void onVmException(VmInstruction instr, VmException e) {
         vmExceptionsCount.incrementAndGet();
         log(e.getMessage());
+    }
+
+    @Override
+    public void onThreadSpawned(VmInstruction instr, String threadName) {
+        // do nothing
+    }
+
+    @Override
+    public void onThreadFinished(String threadName) {
+        // do nothing
     }
 
     @Override
@@ -105,7 +131,7 @@ public class InterpreterTestListener extends NullVmEventsListener implements IIn
     }
 
     @Override
-    public void onRunsFinished() {
+    public void onHarnessFinished() {
         traceLogger.finish();
     }
 

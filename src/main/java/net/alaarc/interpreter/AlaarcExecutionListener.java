@@ -1,8 +1,9 @@
 package net.alaarc.interpreter;
 
 import net.alaarc.AlaarcOptions;
+import net.alaarc.IAlaarcEventsListener;
 import net.alaarc.log.Logger;
-import net.alaarc.vm.VmEventsLogger;
+import net.alaarc.vm.AlaarcEventsLogger;
 import net.alaarc.vm.VmException;
 import net.alaarc.vm.VmInstruction;
 import net.alaarc.vm.instructions.AssertRc;
@@ -16,12 +17,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * @author dnpetrov
  */
-public class AlaarcExecutionListener implements IInterpreterListener {
+public class AlaarcExecutionListener implements IAlaarcEventsListener {
     private final AtomicInteger assertionsPassed = new AtomicInteger(0);
     private final AtomicInteger assertionsFailed = new AtomicInteger(0);
     private final AtomicInteger vmExceptionsCount = new AtomicInteger(0);
 
-    private final VmEventsLogger vmEventsLogger;
+    private final AlaarcEventsLogger vmEventsLogger;
     private final Logger logger;
 
     private final List<RunResult> runResults = new ArrayList<>();
@@ -32,7 +33,7 @@ public class AlaarcExecutionListener implements IInterpreterListener {
 
     public AlaarcExecutionListener(AlaarcOptions options) throws IOException {
         logger = resolveLogger(options);
-        vmEventsLogger = new VmEventsLogger(logger);
+        vmEventsLogger = new AlaarcEventsLogger(logger);
     }
 
     private static Logger resolveLogger(AlaarcOptions options) throws IOException {
@@ -44,14 +45,8 @@ public class AlaarcExecutionListener implements IInterpreterListener {
         }
     }
 
-    private void reset() {
-        assertionsPassed.set(0);
-        assertionsFailed.set(0);
-        vmExceptionsCount.set(0);
-    }
-
     @Override
-    public void onRunsStarted() {
+    public void onHarnessStarted() {
         totalAssertionsPassed = 0;
         totalAssertionsFailed = 0;
         totalVmExceptions = 0;
@@ -118,7 +113,9 @@ public class AlaarcExecutionListener implements IInterpreterListener {
 
     @Override
     public void onRunStarted(int i) {
-        reset();
+        assertionsPassed.set(0);
+        assertionsFailed.set(0);
+        vmExceptionsCount.set(0);
     }
 
     @Override
@@ -136,7 +133,7 @@ public class AlaarcExecutionListener implements IInterpreterListener {
     }
 
     @Override
-    public void onRunsFinished() {
+    public void onHarnessFinished() {
         logger.finish();
     }
 

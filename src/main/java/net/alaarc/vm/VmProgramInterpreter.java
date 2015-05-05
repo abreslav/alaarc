@@ -1,5 +1,7 @@
 package net.alaarc.vm;
 
+import net.alaarc.IAlaarcEventsListener;
+
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -8,7 +10,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author dnpetrov
  */
 public class VmProgramInterpreter implements Runnable {
-    private final IVmEventsListener listener;
+    private final IAlaarcEventsListener listener;
     private final IVmObjectFactory objectFactory;
     private final VmProgram program;
 
@@ -17,7 +19,7 @@ public class VmProgramInterpreter implements Runnable {
 
     private final AtomicInteger threadsCount = new AtomicInteger(0);
 
-    public VmProgramInterpreter(IVmEventsListener listener, IVmObjectFactory objectFactory, VmProgram program) {
+    public VmProgramInterpreter(IAlaarcEventsListener listener, IVmObjectFactory objectFactory, VmProgram program) {
         this.listener = Objects.requireNonNull(listener);
         this.objectFactory = Objects.requireNonNull(objectFactory);
         this.program = Objects.requireNonNull(program);
@@ -26,7 +28,7 @@ public class VmProgramInterpreter implements Runnable {
         this.vmThreadDefs = createThreadDefs(program);
     }
 
-    public VmProgramInterpreter(IVmEventsListener listener, VmProgram program) {
+    public VmProgramInterpreter(IAlaarcEventsListener listener, VmProgram program) {
         this(listener, new VmObjectFactory(listener), program);
     }
 
@@ -56,7 +58,7 @@ public class VmProgramInterpreter implements Runnable {
         return vmThreadDefs[id];
     }
 
-    public IVmEventsListener getListener() {
+    public IAlaarcEventsListener getListener() {
         return listener;
     }
 

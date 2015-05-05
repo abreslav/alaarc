@@ -1,5 +1,6 @@
 package net.alaarc.vm;
 
+import net.alaarc.IAlaarcEventsListener;
 import net.alaarc.log.LogMessage;
 import net.alaarc.log.Logger;
 import net.alaarc.vm.instructions.AssertRc;
@@ -11,10 +12,10 @@ import java.util.Objects;
 /**
  * @author dnpetrov
  */
-public class VmEventsLogger implements IVmEventsListener {
+public class AlaarcEventsLogger implements IAlaarcEventsListener {
     private final Logger logger;
 
-    public VmEventsLogger(Logger logger) {
+    public AlaarcEventsLogger(Logger logger) {
         this.logger = Objects.requireNonNull(logger);
     }
 
@@ -24,10 +25,6 @@ public class VmEventsLogger implements IVmEventsListener {
         } catch (InterruptedException e) {
             // swallow it
         }
-    }
-
-    public void finish() {
-        logger.finish();
     }
 
     @Override
@@ -89,5 +86,10 @@ public class VmEventsLogger implements IVmEventsListener {
     @Override
     public void onAssertionFailed(AssertRc instr, long actualRc) {
         log("@" + instr.getDebugInfo() + ": assertion FAILED: " + actualRc + instr.getComparisonOperator() + instr.getNumber());
+    }
+
+    @Override
+    public void onHarnessFinished() {
+        logger.finish();
     }
 }
