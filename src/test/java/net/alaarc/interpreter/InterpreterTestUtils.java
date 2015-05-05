@@ -48,4 +48,9 @@ public class InterpreterTestUtils {
         options.setTimes(times);
         return new AlaarcInterpreter(options, program);
     }
+
+    public static void assertNoProblems(InterpreterTestResult testResult) {
+        Assert.assertEquals("Some assertions failed", 0, testResult.getTotalAssertionsFailed());
+        Assert.assertEquals("Some VM exceptions fired", 0, testResult.getTotalVmExceptions());
+    }
 }

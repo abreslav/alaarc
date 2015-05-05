@@ -18,8 +18,8 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author dnpetrov
  */
 public class InterpreterTestListener extends NullVmEventsListener implements IInterpreterListener {
-    private final StringWriter logContentWriter;
-    private final Logger logger;
+    private final StringWriter traceWriter;
+    private final Logger traceLogger;
 
     private final AtomicInteger assertionsPassed = new AtomicInteger(0);
     private final AtomicInteger assertionsFailed = new AtomicInteger(0);
@@ -32,13 +32,13 @@ public class InterpreterTestListener extends NullVmEventsListener implements IIn
     private static ILogMessageFormatter TEST_MESSAGE_FORMATTER = LogMessage::getMessage;
 
     public InterpreterTestListener() {
-        logContentWriter = new StringWriter();
-        logger = new Logger(new PrintWriter(logContentWriter, true), TEST_MESSAGE_FORMATTER);
+        traceWriter = new StringWriter();
+        traceLogger = new Logger(new PrintWriter(traceWriter, true), TEST_MESSAGE_FORMATTER);
     }
 
     private void log(String message) {
         try {
-            logger.log(LogMessage.create(message));
+            traceLogger.log(LogMessage.create(message));
         } catch (InterruptedException e) {
             // swallow it
         }
@@ -106,15 +106,16 @@ public class InterpreterTestListener extends NullVmEventsListener implements IIn
 
     @Override
     public void onRunsFinished() {
-        logger.finish();
+        traceLogger.finish();
     }
 
     public InterpreterTestResult getTestResult() {
-        return new InterpreterTestResult(getLogContent(), getTotalAssertionsPassed(), getTotalAssertionsFailed(), getTotalVmExceptions());
+        return new InterpreterTestResult(getLogContent(),
+                getTotalAssertionsPassed(), getTotalAssertionsFailed(), getTotalVmExceptions());
     }
 
     public String getLogContent() {
-        return logContentWriter.toString();
+        return traceWriter.toString();
     }
 
     public int getTotalAssertionsPassed() {
