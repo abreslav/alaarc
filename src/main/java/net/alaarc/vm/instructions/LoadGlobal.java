@@ -32,6 +32,6 @@ public class LoadGlobal extends VmInstruction {
 
     @Override
     public String toString() {
-        return "loadGlobal " + globalVar.getName() + " @" + getDebugInfo();
+        return "loadGlobal " + globalVar + " @" + getDebugInfo();
     }
 }

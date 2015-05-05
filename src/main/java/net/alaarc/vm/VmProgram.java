@@ -2,6 +2,7 @@ package net.alaarc.vm;
 
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.List;
 import java.util.Objects;
 
@@ -45,11 +46,18 @@ public class VmProgram {
             pw.println();
         }
     }
-
+    
     public static void dump(OutputStream ps, VmProgram program) {
         PrintWriter pw = new PrintWriter(ps);
         program.dump(pw);
         pw.flush();
     }
 
+    public static String dumpToString(VmProgram vmProgram) {
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        vmProgram.dump(pw);
+        pw.flush();
+        return sw.toString();
+    }
 }

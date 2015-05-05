@@ -1,0 +1,33 @@
+  /test1.alaarc:3: program
+    /test1.alaarc:3: threadBody
+      /test1.alaarc:3: assign _ ASSIGN _
+        /test1.alaarc:3: name a
+        /test1.alaarc:3: object
+      /test1.alaarc:4: assign _ ASSIGN _
+        /test1.alaarc:4: field _.b
+          /test1.alaarc:4: name a
+        /test1.alaarc:4: object
+      /test1.alaarc:5: assign _ ASSIGN _
+        /test1.alaarc:5: name aa
+        /test1.alaarc:5: name a
+      /test1.alaarc:6: assign _ ASSIGN _
+        /test1.alaarc:6: name aa
+        /test1.alaarc:6: field _.b
+          /test1.alaarc:6: name a
+      /test1.alaarc:7: assign _ ASSIGN _
+        /test1.alaarc:7: name x
+        /test1.alaarc:7: null
+      /test1.alaarc:8: assign _ ASSIGN_WEAK _
+        /test1.alaarc:8: name x
+        /test1.alaarc:8: name a
+      /test1.alaarc:10: thread
+        /test1.alaarc:11: threadBody
+          /test1.alaarc:11: sleepr
+          /test1.alaarc:12: dump _
+            /test1.alaarc:12: field _.b
+              /test1.alaarc:12: name a
+      /test1.alaarc:15: sleep
+      /test1.alaarc:16: dump _
+        /test1.alaarc:16: name a
+      /test1.alaarc:18: assertrc _ GE 2
+        /test1.alaarc:18: name a

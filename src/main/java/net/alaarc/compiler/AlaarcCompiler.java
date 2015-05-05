@@ -19,20 +19,23 @@ public class AlaarcCompiler {
     private final AlaarcOptions alaarcOptions;
     private ANTLRInputStream antlrInput = null;
 
+    private AstProgram astProgram;
     private VmProgram vmProgram;
+
     private int numErrors;
     
     public AlaarcCompiler(AlaarcOptions alaarcOptions) {
         this.alaarcOptions = alaarcOptions;
     }
 
-    public AlaarcCompiler(String sourceFileName, ANTLRInputStream antlrInput) {
+    AlaarcCompiler(String sourceFileName, ANTLRInputStream antlrInput) {
         this.alaarcOptions = new AlaarcOptions();
         this.alaarcOptions.setSourceFileName(sourceFileName);
         this.antlrInput = antlrInput;
     }
 
     public void run() {
+        astProgram = null;
         vmProgram = null;
         numErrors = 0;
 
@@ -61,13 +64,12 @@ public class AlaarcCompiler {
         AlaarcParser.InitContext parsed;
         try {
             parsed = parser.init();
+            AstBuilder astBuilder = new AstBuilder(sourceFileName);
+            astProgram = astBuilder.buildProgram(parsed);
         } catch (Exception e) {
-            System.out.println("Parse failed.");
+            System.out.println("Parse failed: " + e.getMessage());
             return;
         }
-
-        AstBuilder astBuilder = new AstBuilder(sourceFileName);
-        AstProgram astProgram = astBuilder.buildProgram(parsed);
 
         ProgramCodeGenerator codeGen = new ProgramCodeGenerator();
         codeGen.run(astProgram);
@@ -82,6 +84,10 @@ public class AlaarcCompiler {
                 System.out.println("Could not emit generated code to " + asmFileName + ": " + e.getMessage());
             }
         }
+    }
+
+    public AstProgram getAstProgram() {
+        return astProgram;
     }
 
     public VmProgram getVmProgram() {

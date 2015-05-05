@@ -9,6 +9,7 @@ import net.alaarc.ast.nodes.stmts.*;
 
 import java.io.PrintStream;
 import java.io.PrintWriter;
+import java.io.StringWriter;
 
 /**
  * @author dnpetrov
@@ -27,10 +28,27 @@ public class AstDumper implements IAstNodeVisitor {
         dump(pw, node, indent);
     }
 
+    public static void dump(PrintStream ps, AstNode node) {
+        PrintWriter pw = new PrintWriter(ps);
+        dump(pw, node, 2);
+    }
+
     public static void dump(PrintWriter pw, AstNode node, int indent) {
         AstDumper dumper = new AstDumper(pw, indent);
         node.accept(dumper);
         pw.flush();
+    }
+
+    public static void dump(StringWriter sw, AstNode node) {
+        PrintWriter pw = new PrintWriter(sw, true);
+        AstDumper dumper = new AstDumper(pw, 2);
+        node.accept(dumper);
+    }
+
+    public static String dumpToString(AstNode node) {
+        StringWriter sw = new StringWriter();
+        dump(sw, node);
+        return sw.toString();
     }
 
     private static PrintWriter indent(PrintWriter out, int k) {

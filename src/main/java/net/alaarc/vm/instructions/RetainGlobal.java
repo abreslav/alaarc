@@ -32,6 +32,6 @@ public class RetainGlobal extends VmInstruction {
 
     @Override
     public String toString() {
-        return "retainGlobal " + globalVar.getName() + " @" + getDebugInfo();
+        return "retainGlobal " + globalVar + " @" + getDebugInfo();
     }
 }

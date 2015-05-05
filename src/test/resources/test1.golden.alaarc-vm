@@ -1,0 +1,37 @@
+Global variables: 
+  #0:a
+  #1:x
+  #2:aa
+
+Thread #1:
+  sleepRand  @/test1.alaarc:11
+  loadGlobal #0:a @/test1.alaarc:12
+  loadSlot b @/test1.alaarc:12
+  dump @/test1.alaarc:12
+  releaseGlobal #0:a @/test1.alaarc:12
+
+Thread #0:
+  createObject @/test1.alaarc:3
+  storeGlobal #0:a @/test1.alaarc:3
+  createObject @/test1.alaarc:4
+  loadGlobal #0:a @/test1.alaarc:4
+  storeSlot b @/test1.alaarc:4
+  loadGlobal #0:a @/test1.alaarc:5
+  storeGlobal #2:aa @/test1.alaarc:5
+  loadGlobal #0:a @/test1.alaarc:6
+  loadSlot b @/test1.alaarc:6
+  storeGlobal #2:aa @/test1.alaarc:6
+  releaseGlobal #2:aa @/test1.alaarc:6
+  pushNull  @/test1.alaarc:7
+  storeGlobal #1:x @/test1.alaarc:7
+  loadGlobal #0:a @/test1.alaarc:8
+  storeWeakGlobal #1:x @/test1.alaarc:8
+  releaseGlobal #1:x @/test1.alaarc:8
+  retainGlobal #0:a @/test1.alaarc:10
+  runThread 1 @/test1.alaarc:10
+  sleep  @/test1.alaarc:15
+  loadGlobal #0:a @/test1.alaarc:16
+  dump @/test1.alaarc:16
+  loadGlobal #0:a @/test1.alaarc:18
+  assertRc >= 2 @/test1.alaarc:18
+  releaseGlobal #0:a @/test1.alaarc:18

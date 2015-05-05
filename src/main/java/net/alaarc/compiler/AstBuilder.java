@@ -71,7 +71,7 @@ public class AstBuilder extends AlaarcBaseVisitor<AstNode> {
     }
 
     private String getDiagnostics(ParserRuleContext ctx) {
-        return sourceFileName + ":" + getLineNumber(ctx) + ": " + ctx.toStringTree();
+        return sourceFileName + ":" + getLineNumber(ctx) + ": " + ctx.getText();
     }
 
     @Override
