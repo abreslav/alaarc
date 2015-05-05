@@ -19,28 +19,42 @@ public class Logger {
     private final BlockingQueue<LogMessage> messages;
     private final PrintWriter writer;
 
-    private final DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
-
     private final Thread logPipeThread;
     private final Object logFinished = new Object();
 
-    public Logger(PrintWriter writer, int queueCapacity) {
+    private final ILogMessageFormatter formatter;
+
+    public Logger(PrintWriter writer, int queueCapacity, ILogMessageFormatter formatter) {
         this.writer = writer;
         this.messages = new ArrayBlockingQueue<>(queueCapacity);
+        this.formatter = formatter;
+
         logPipeThread = new Thread(new LogPipe());
         logPipeThread.start();
     }
 
-    public Logger(PrintWriter writer) {
-        this(writer, DEFAULT_CAPACITY);
+    public static class DefaultMessageFormatter implements ILogMessageFormatter {
+        private static final DateFormat DATE_FORMAT = new SimpleDateFormat("HH:mm:ss");
+
+        @Override
+        public String format(LogMessage message) {
+            String timestamp = DATE_FORMAT.format(message.getTimestamp());
+            return "<" + message.getThreadName() + " @" + timestamp + "> " + message.getMessage();
+        }
     }
 
-    public Logger(int queueCapacity) {
-        this(new PrintWriter(System.out), queueCapacity);
+    public static final ILogMessageFormatter DEFAULT_FORMATTER = new DefaultMessageFormatter();
+
+    public Logger(PrintWriter writer) {
+        this(writer, DEFAULT_CAPACITY, DEFAULT_FORMATTER);
+    }
+
+    public Logger(PrintWriter writer, ILogMessageFormatter formatter) {
+        this(writer, DEFAULT_CAPACITY, formatter);
     }
 
     public Logger() {
-        this(new PrintWriter(System.out), DEFAULT_CAPACITY);
+        this(new PrintWriter(System.out), DEFAULT_CAPACITY, DEFAULT_FORMATTER);
     }
 
     public void log(LogMessage message) throws InterruptedException {
@@ -48,8 +62,7 @@ public class Logger {
     }
 
     private void appendMessage(LogMessage message) {
-        String timestamp = dateFormat.format(message.getTimestamp());
-        writer.println("<" + message.getThreadName() + " @" + timestamp + "> " + message.getMessage());
+        writer.println(formatter.format(message));
         writer.flush();
     }
 
@@ -77,6 +90,7 @@ public class Logger {
                     List<LogMessage> remainingMessages = new ArrayList<>();
                     messages.drainTo(remainingMessages);
                     remainingMessages.forEach(Logger.this::appendMessage);
+                    writer.flush();
                     synchronized (logFinished) {
                         logFinished.notifyAll();
                     }

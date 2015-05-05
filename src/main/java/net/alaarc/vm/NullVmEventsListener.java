@@ -43,10 +43,10 @@ public class NullVmEventsListener implements IVmEventsListener {
     }
 
     @Override
-    public void onAssertionPassed(AssertRc instr) {
+    public void onAssertionPassed(AssertRc instr, long actualRc) {
     }
 
     @Override
-    public void onAssertionFailed(AssertRc instr) {
+    public void onAssertionFailed(AssertRc instr, long actualRc) {
     }
 }

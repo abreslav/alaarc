@@ -1,53 +1,47 @@
 package net.alaarc.interpreter;
 
-import net.alaarc.AlaarcOptions;
+import net.alaarc.log.ILogMessageFormatter;
+import net.alaarc.log.LogMessage;
 import net.alaarc.log.Logger;
-import net.alaarc.vm.VmEventsLogger;
+import net.alaarc.vm.NullVmEventsListener;
 import net.alaarc.vm.VmException;
 import net.alaarc.vm.VmInstruction;
 import net.alaarc.vm.instructions.AssertRc;
 
-import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.StringWriter;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
+ * TODO code duplication with {@link AlaarcExecutionListener} & {@link net.alaarc.vm.VmEventsLogger}, refactor.
+ *
  * @author dnpetrov
  */
-public class AlaarcExecutionListener implements IInterpreterListener {
+public class InterpreterTestListener extends NullVmEventsListener implements IInterpreterListener {
+    private final StringWriter logContentWriter;
+    private final Logger logger;
+
     private final AtomicInteger assertionsPassed = new AtomicInteger(0);
     private final AtomicInteger assertionsFailed = new AtomicInteger(0);
     private final AtomicInteger vmExceptionsCount = new AtomicInteger(0);
-
-    private final VmEventsLogger vmEventsLogger;
-    private final Logger logger;
-
-    private final List<RunResult> runResults = new ArrayList<>();
 
     private int totalAssertionsPassed;
     private int totalAssertionsFailed;
     private int totalVmExceptions;
 
-    public AlaarcExecutionListener(AlaarcOptions options) throws IOException {
-        logger = resolveLogger(options);
-        vmEventsLogger = new VmEventsLogger(logger);
+    private static ILogMessageFormatter TEST_MESSAGE_FORMATTER = LogMessage::getMessage;
+
+    public InterpreterTestListener() {
+        logContentWriter = new StringWriter();
+        logger = new Logger(new PrintWriter(logContentWriter, true), TEST_MESSAGE_FORMATTER);
     }
 
-    private static Logger resolveLogger(AlaarcOptions options) throws IOException {
-        if (options.getLogFileName().isPresent()) {
-            String logFileName = options.getLogFileName().get();
-            return new Logger(new PrintWriter(AlaarcOptions.resolveOutputStream(logFileName)));
-        } else {
-            return new Logger();
+    private void log(String message) {
+        try {
+            logger.log(LogMessage.create(message));
+        } catch (InterruptedException e) {
+            // swallow it
         }
-    }
-
-    private void reset() {
-        assertionsPassed.set(0);
-        assertionsFailed.set(0);
-        vmExceptionsCount.set(0);
     }
 
     @Override
@@ -58,67 +52,45 @@ public class AlaarcExecutionListener implements IInterpreterListener {
     }
 
     @Override
-    public void onProgramStarted() {
-        vmEventsLogger.onProgramStarted();
-    }
-
-    @Override
-    public void onProgramFinished() {
-        vmEventsLogger.onProgramFinished();
-    }
-
-    @Override
-    public void onObjectDisposed(long objectId) {
-        vmEventsLogger.onObjectDisposed(objectId);
-    }
-
-    @Override
     public void onJavaException(VmInstruction instr, Exception e) {
-        vmEventsLogger.onJavaException(instr, e);
         throw new RuntimeException(e);
     }
 
     @Override
     public void onVmException(VmInstruction instr, VmException e) {
-        vmEventsLogger.onVmException(instr, e);
         vmExceptionsCount.incrementAndGet();
-    }
-
-    @Override
-    public void onThreadSpawned(VmInstruction instr, String threadName) {
-        vmEventsLogger.onThreadSpawned(instr, threadName);
-    }
-
-    @Override
-    public void onThreadFinished(String threadName) {
-        vmEventsLogger.onThreadFinished(threadName);
+        log(e.getMessage());
     }
 
     @Override
     public void onObjectDump(VmInstruction instr, String dump) {
-        vmEventsLogger.onObjectDump(instr, dump);
+        log(instr.toString() + ": " + dump);
     }
 
     @Override
     public void onPostMessage(VmInstruction instr, String message) {
-        vmEventsLogger.onPostMessage(instr, message);
+        log(instr.toString() + ": " + message);
     }
 
     @Override
     public void onAssertionPassed(AssertRc instr, long actualRc) {
-        vmEventsLogger.onAssertionPassed(instr, actualRc);
+        log("@" + instr.getDebugInfo() + ": assertion PASSED: "
+                + actualRc + instr.getComparisonOperator() + instr.getNumber());
         assertionsPassed.incrementAndGet();
     }
 
     @Override
     public void onAssertionFailed(AssertRc instr, long actualRc) {
-        vmEventsLogger.onAssertionFailed(instr, actualRc);
+        log("@" + instr.getDebugInfo() + ": assertion FAILED: "
+                + actualRc + instr.getComparisonOperator() + instr.getNumber());
         assertionsFailed.incrementAndGet();
     }
 
     @Override
     public void onRunStarted(int i) {
-        reset();
+        assertionsPassed.set(0);
+        assertionsFailed.set(0);
+        vmExceptionsCount.set(0);
     }
 
     @Override
@@ -126,9 +98,6 @@ public class AlaarcExecutionListener implements IInterpreterListener {
         int runAssertionsPassed = assertionsPassed.get();
         int runAssertionsFailed = assertionsFailed.get();
         int runVmExceptions = vmExceptionsCount.get();
-
-        RunResult result = new RunResult(i, runAssertionsPassed, runAssertionsFailed, runVmExceptions);
-        runResults.add(result);
 
         totalAssertionsPassed += runAssertionsPassed;
         totalAssertionsFailed += runAssertionsFailed;
@@ -140,8 +109,12 @@ public class AlaarcExecutionListener implements IInterpreterListener {
         logger.finish();
     }
 
-    public List<RunResult> getRunResults() {
-        return runResults;
+    public InterpreterTestResult getTestResult() {
+        return new InterpreterTestResult(getLogContent(), getTotalAssertionsPassed(), getTotalAssertionsFailed(), getTotalVmExceptions());
+    }
+
+    public String getLogContent() {
+        return logContentWriter.toString();
     }
 
     public int getTotalAssertionsPassed() {

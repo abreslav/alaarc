@@ -12,14 +12,20 @@ import java.util.Objects;
  * @author dnpetrov
  */
 public class VmProgram {
+    private final String sourceFileName;
     private final List<VmGlobalVarDef> globalVarDefs;
     private final VmThreadDef mainThread;
     private final List<VmThreadDef> vmThreadDefs;
 
-    public VmProgram(List<VmGlobalVarDef> globalVarDefs, VmThreadDef mainThread, List<VmThreadDef> vmThreadDefs) {
+    public VmProgram(String sourceFileName, List<VmGlobalVarDef> globalVarDefs, VmThreadDef mainThread, List<VmThreadDef> vmThreadDefs) {
+        this.sourceFileName = Objects.requireNonNull(sourceFileName);
         this.globalVarDefs = Objects.requireNonNull(globalVarDefs);
         this.mainThread = Objects.requireNonNull(mainThread);
         this.vmThreadDefs = Objects.requireNonNull(vmThreadDefs);
+    }
+
+    public String getSourceFileName() {
+        return sourceFileName;
     }
 
     public VmThreadDef getMainThread() {

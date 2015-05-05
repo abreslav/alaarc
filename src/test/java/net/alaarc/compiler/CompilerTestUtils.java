@@ -19,13 +19,13 @@ public class CompilerTestUtils {
 
         AstProgram astProgram = compiler.getAstProgram();
         if (astProgram != null) {
-            System.out.println("> AST for " + path + ": ");
+            System.out.println("> AST for " + path + ":");
             AstDumper.dump(System.out, astProgram);
         }
 
         VmProgram vmProgram = compiler.getVmProgram();
         if (vmProgram != null) {
-            System.out.println("> VM code for " + path + ": ");
+            System.out.println("> VM code for " + path + ":");
             VmProgram.dump(System.out, vmProgram);
         }
 

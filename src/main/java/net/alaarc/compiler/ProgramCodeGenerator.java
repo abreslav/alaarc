@@ -43,7 +43,7 @@ public class ProgramCodeGenerator {
         VmThreadDef mainThreadDef = threadCodeGenerator.getThreadDef();
         vmThreadDefs.add(mainThreadDef);
 
-        this.vmProgram = new VmProgram(globalVars, mainThreadDef, vmThreadDefs);
+        this.vmProgram = new VmProgram(astProgram.getSourceFileName(), globalVars, mainThreadDef, vmThreadDefs);
     }
 
     public VmProgram getVmProgram() {

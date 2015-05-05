@@ -6,6 +6,7 @@ import net.alaarc.vm.VmProgramInterpreter;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author dnpetrov
@@ -17,7 +18,14 @@ public class AlaarcInterpreter {
     private int totalErrors;
 
     public AlaarcInterpreter(AlaarcOptions options, VmProgram vmProgram) {
-        this.options = options;
+        this.options = Objects.requireNonNull(options);
+        this.vmProgram = Objects.requireNonNull(vmProgram);
+    }
+
+    AlaarcInterpreter(int times, VmProgram vmProgram) {
+        this.options = new AlaarcOptions();
+        this.options.setTimes(times);
+
         this.vmProgram = vmProgram;
     }
 
@@ -31,7 +39,6 @@ public class AlaarcInterpreter {
             listener.onRunFinished(i);
         }
         listener.onRunsFinished();
-
     }
 
     public void run() {
@@ -39,7 +46,8 @@ public class AlaarcInterpreter {
         try {
             exec = new AlaarcExecutionListener(options);
         } catch (IOException e) {
-            System.out.println("Execution failed: " + e.getMessage());
+            System.out.println("Startup failed: " + e.getMessage());
+            totalErrors = 1;
             return;
         }
 

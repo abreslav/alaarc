@@ -82,12 +82,12 @@ public class VmEventsLogger implements IVmEventsListener {
     }
 
     @Override
-    public void onAssertionPassed(AssertRc instr) {
-        log("Assertion passed: " + instr.toString());
+    public void onAssertionPassed(AssertRc instr, long actualRc) {
+        log("@" + instr.getDebugInfo() + ": assertion PASSED: " + actualRc + instr.getComparisonOperator() + instr.getNumber());
     }
 
     @Override
-    public void onAssertionFailed(AssertRc instr) {
-        log("Assertion failed: " + instr.toString());
+    public void onAssertionFailed(AssertRc instr, long actualRc) {
+        log("@" + instr.getDebugInfo() + ": assertion FAILED: " + actualRc + instr.getComparisonOperator() + instr.getNumber());
     }
 }

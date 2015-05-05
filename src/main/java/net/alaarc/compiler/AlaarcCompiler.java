@@ -14,6 +14,10 @@ import java.io.OutputStream;
 /**
  * Top-level wrapper for compilation workflow.
  *
+ * <p>
+ *     TODO refactor into AlaarcCompiler & AlaarcCompilationResult?
+ * </p>
+ *
  * @author dnpetrov
  */
 public class AlaarcCompiler {

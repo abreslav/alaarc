@@ -1,4 +1,4 @@
-package net.alaarc.grammar.tests;
+package net.alaarc.grammar;
 
 import net.alaarc.AntlrTestUtils;
 import net.alaarc.ast.AstDumper;

@@ -18,6 +18,6 @@ public interface IVmEventsListener {
     void onThreadFinished(String threadName);
     void onObjectDump(VmInstruction instr, String dump);
     void onPostMessage(VmInstruction instr, String message);
-    void onAssertionPassed(AssertRc instr);
-    void onAssertionFailed(AssertRc instr);
+    void onAssertionPassed(AssertRc instr, long actualRc);
+    void onAssertionFailed(AssertRc instr, long actualRc);
 }

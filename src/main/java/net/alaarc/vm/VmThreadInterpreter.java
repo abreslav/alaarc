@@ -201,9 +201,9 @@ public class VmThreadInterpreter implements Runnable {
             long refCount = x.getRefCount();
             long num = instr.getNumber();
             if (instr.getComparisonOperator().compare(refCount, num)) {
-                getListener().onAssertionPassed(instr);
+                getListener().onAssertionPassed(instr, refCount);
             } else {
-                getListener().onAssertionFailed(instr);
+                getListener().onAssertionFailed(instr, refCount);
             }
             x.release();
         }

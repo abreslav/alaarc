@@ -1,0 +1,16 @@
+a = object
+a.b = object
+aa = a
+aa = a.b
+x = null
+x ~= a
+
+thread {
+    sleepr
+    dump a.b
+    dump a
+}
+
+sleep
+
+assertrc a >= 2
