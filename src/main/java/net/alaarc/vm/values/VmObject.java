@@ -1,6 +1,6 @@
 package net.alaarc.vm.values;
 
-import net.alaarc.IAlaarcEventsListener;
+import net.alaarc.IAlaarcListener;
 import net.alaarc.vm.*;
 
 import java.util.Map;
@@ -13,7 +13,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * @author dnpetrov
  */
 public class VmObject implements IVmValue {
-    private final IAlaarcEventsListener vmEventsListener;
+    private final IAlaarcListener vmEventsListener;
 
     private final long objectId;
 
@@ -26,7 +26,7 @@ public class VmObject implements IVmValue {
 
     private final MultiReadMultiWriteMutex rwMutex = new MultiReadMultiWriteMutex();
 
-    public VmObject(IAlaarcEventsListener vm, long objectId) {
+    public VmObject(IAlaarcListener vm, long objectId) {
         this.vmEventsListener = Objects.requireNonNull(vm);
         this.objectId = objectId;
     }

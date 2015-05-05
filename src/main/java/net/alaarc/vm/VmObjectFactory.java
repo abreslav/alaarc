@@ -1,6 +1,6 @@
 package net.alaarc.vm;
 
-import net.alaarc.IAlaarcEventsListener;
+import net.alaarc.IAlaarcListener;
 import net.alaarc.vm.values.VmObject;
 
 import java.util.concurrent.atomic.AtomicLong;
@@ -10,9 +10,9 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 public class VmObjectFactory implements IVmObjectFactory {
     private final AtomicLong objectsCounter = new AtomicLong(0);
-    private final IAlaarcEventsListener vmEventsListener;
+    private final IAlaarcListener vmEventsListener;
 
-    public VmObjectFactory(IAlaarcEventsListener vmEventsListener) {
+    public VmObjectFactory(IAlaarcListener vmEventsListener) {
         this.vmEventsListener = vmEventsListener;
     }
 

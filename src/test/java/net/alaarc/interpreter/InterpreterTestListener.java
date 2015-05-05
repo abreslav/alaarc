@@ -1,10 +1,10 @@
 package net.alaarc.interpreter;
 
-import net.alaarc.IAlaarcEventsListener;
+import net.alaarc.IAlaarcListener;
 import net.alaarc.log.ILogMessageFormatter;
 import net.alaarc.log.LogMessage;
 import net.alaarc.log.Logger;
-import net.alaarc.vm.AlaarcEventsLogger;
+import net.alaarc.vm.AlaarcLogger;
 import net.alaarc.vm.VmException;
 import net.alaarc.vm.VmInstruction;
 import net.alaarc.vm.instructions.AssertRc;
@@ -14,11 +14,11 @@ import java.io.StringWriter;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * TODO code duplication with {@link AlaarcExecutionListener} & {@link AlaarcEventsLogger}, refactor.
+ * TODO code duplication with {@link AlaarcExecutionListener} & {@link AlaarcLogger}, refactor.
  *
  * @author dnpetrov
  */
-public class InterpreterTestListener implements IAlaarcEventsListener {
+public class InterpreterTestListener implements IAlaarcListener {
     private final StringWriter traceWriter;
     private final Logger traceLogger;
 
