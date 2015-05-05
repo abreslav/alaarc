@@ -4,6 +4,8 @@ import net.alaarc.compiler.AlaarcCompiler;
 import net.alaarc.interpreter.AlaarcInterpreter;
 import net.alaarc.vm.VmProgram;
 
+import java.util.Optional;
+
 /**
  * @author dnpetrov
  */
@@ -21,6 +23,10 @@ public class Main {
             System.exit(1);
         }
 
+        if (compiler.hasErrors()) {
+            System.exit(1);
+        }
+
         VmProgram vmProgram = compiler.getVmProgram();
         AlaarcInterpreter interpreter = new AlaarcInterpreter(options, vmProgram);
         try {
@@ -28,10 +34,9 @@ public class Main {
         } catch (Exception e) {
             System.out.println(e.getMessage());
             e.printStackTrace();
-            System.exit(1);
         }
 
-        if (interpreter.hadAnyProblems()) {
+        if (interpreter.hasErrors()) {
             System.exit(1);
         }
     }
@@ -39,7 +44,7 @@ public class Main {
     /**
      * Quick and dirty command-line parser.
      *
-     * @param args
+     * @param args  command-line arguments (from <code>main</code>)
      * @return parsed options
      */
     private static AlaarcOptions parseCommandLine(String[] args) {

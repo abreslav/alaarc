@@ -1,6 +1,6 @@
 package net.alaarc.compiler.tests;
 
-import net.alaarc.TestUtils;
+import net.alaarc.AntlrTestUtils;
 import net.alaarc.compiler.AlaarcCompiler;
 import org.junit.Test;
 
@@ -16,8 +16,13 @@ public class TestCompilerSmoke {
         compileProgram("/test1.alaarc");
     }
 
+    @Test
+    public void testCompileError() throws Exception {
+        compileProgram("/test-error.alaarc");
+    }
+
     private void compileProgram(String path) throws IOException {
-        AlaarcCompiler compiler = new AlaarcCompiler(path, TestUtils.getResourceAsAntlrInput(path));
+        AlaarcCompiler compiler = new AlaarcCompiler(path, AntlrTestUtils.getResourceAsAntlrInput(path));
         compiler.run();
     }
 

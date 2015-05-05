@@ -116,7 +116,7 @@ public class AlaarcInterpreter {
         return alaarcExceptions;
     }
 
-    public boolean hadAnyProblems() {
+    public boolean hasErrors() {
         return assertionsFailed != 0 || alaarcExceptions != 0;
     }
 }

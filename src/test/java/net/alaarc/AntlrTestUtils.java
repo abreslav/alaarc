@@ -7,8 +7,8 @@ import java.io.IOException;
 /**
  * @author dnpetrov
  */
-public class TestUtils {
+public class AntlrTestUtils {
     public static ANTLRInputStream getResourceAsAntlrInput(String path) throws IOException {
-        return new ANTLRInputStream(TestUtils.class.getResourceAsStream(path));
+        return new ANTLRInputStream(AntlrTestUtils.class.getResourceAsStream(path));
     }
 }

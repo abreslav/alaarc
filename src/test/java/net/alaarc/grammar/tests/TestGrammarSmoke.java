@@ -1,6 +1,6 @@
 package net.alaarc.grammar.tests;
 
-import net.alaarc.TestUtils;
+import net.alaarc.AntlrTestUtils;
 import net.alaarc.ast.AstDumper;
 import net.alaarc.ast.nodes.AstProgram;
 import net.alaarc.compiler.AstBuilder;
@@ -31,7 +31,7 @@ public class TestGrammarSmoke {
     }
 
     private void parseProgram(final String path) throws IOException {
-        AlaarcLexer lexer = new AlaarcLexer(TestUtils.getResourceAsAntlrInput(path));
+        AlaarcLexer lexer = new AlaarcLexer(AntlrTestUtils.getResourceAsAntlrInput(path));
         AlaarcParser parser = new AlaarcParser(new CommonTokenStream(lexer));
         parser.addErrorListener(new BaseErrorListener() {
             @Override

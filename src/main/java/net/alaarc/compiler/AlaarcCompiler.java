@@ -8,6 +8,7 @@ import net.alaarc.vm.VmProgram;
 import org.antlr.v4.runtime.*;
 
 import java.io.*;
+import java.util.Optional;
 
 /**
  * Top-level wrapper for compilation workflow.
@@ -19,7 +20,8 @@ public class AlaarcCompiler {
     private ANTLRInputStream antlrInput = null;
 
     private VmProgram vmProgram;
-
+    private int numErrors;
+    
     public AlaarcCompiler(AlaarcOptions alaarcOptions) {
         this.alaarcOptions = alaarcOptions;
     }
@@ -32,6 +34,7 @@ public class AlaarcCompiler {
 
     public void run() {
         vmProgram = null;
+        numErrors = 0;
 
         if (!alaarcOptions.getSourceFileName().isPresent()) {
             System.out.println("Nothing to compile.");
@@ -43,7 +46,7 @@ public class AlaarcCompiler {
         // Testing hack: ANTLR input could be provided in constructor.
         if (antlrInput == null) {
             try {
-                antlrInput = new ANTLRInputStream(new InputStreamReader(new FileInputStream(sourceFileName)));
+                antlrInput = new ANTLRFileStream(sourceFileName);
             } catch (IOException e) {
                 System.out.println("Couldn't open file: " + sourceFileName);
                 e.printStackTrace();
@@ -52,6 +55,7 @@ public class AlaarcCompiler {
         }
 
         AlaarcLexer lexer = new AlaarcLexer(antlrInput);
+
         AlaarcParser parser = new AlaarcParser(new CommonTokenStream(lexer));
         parser.addErrorListener(new ParsingErrorListener(sourceFileName));
         AlaarcParser.InitContext parsed;
@@ -69,7 +73,7 @@ public class AlaarcCompiler {
         codeGen.run(astProgram);
         vmProgram = codeGen.getVmProgram();
 
-        if (alaarcOptions.getAsmFileName().isPresent()) {
+        if (alaarcOptions.getAsmFileName().isPresent() && vmProgram != null) {
             String asmFileName = alaarcOptions.getAsmFileName().get();
             try {
                 OutputStream out = AlaarcOptions.resolveOutputStream(asmFileName);
@@ -84,7 +88,7 @@ public class AlaarcCompiler {
         return vmProgram;
     }
 
-    private static class ParsingErrorListener extends BaseErrorListener {
+    private class ParsingErrorListener extends BaseErrorListener {
         private final String sourceFileName;
 
         public ParsingErrorListener(String sourceFileName) {
@@ -93,9 +97,19 @@ public class AlaarcCompiler {
 
         @Override
         public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line, int charPositionInLine, String msg, RecognitionException e) {
-            final String message = sourceFileName + ":" + line + ": " + msg;
-            System.err.println(message);
-            throw new IllegalStateException(message);
+            reportSyntaxError(sourceFileName, line, msg);
         }
+    }
+
+    private void reportSyntaxError(String s, int line, String msg) {
+        numErrors++;
+    }
+
+    public int getNumErrors() {
+        return numErrors;
+    }
+
+    public boolean hasErrors() {
+        return numErrors > 0;
     }
 }
